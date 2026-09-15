@@ -12,6 +12,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
+  <!-- Icono personalizado para iPhone (Manzanita con fondo lila) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23b492cd%22/><text y=%22.8em%22 font-size=%2270%22 x=%2215%22>🍎</text></svg>">
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
@@ -505,7 +508,7 @@
       isCloudReady = true;
     } catch (e) { console.warn("Firebase:", e); }
 
-    const STORAGE_KEY = 'MARY_FITNESS_DATA_V8';
+    const STORAGE_KEY = 'MARY_FITNESS_DATA_V9';
 
     let maryData = {
       metas: { calMin: 1600, calMax: 1700, protMin: 80, protMax: 140, cardio: 30, agua: 2.0 },
@@ -1168,7 +1171,6 @@
         let trackerDaysHtml = '';
         
         if (g.frequency === 'Semanal') {
-          // Evaluación Semanal (ej. 5 entrenamientos en la semana)
           let totalCount = 0;
           if (g.metricType === 'entreno') {
             totalCount = maryData.entrenamiento.filter(x => weekDays.some(w => w.dateStr === x.date)).length;
@@ -1185,14 +1187,13 @@
               </div>
             </div>`;
         } else {
-          // Evaluación Diaria
           weekDays.forEach(w => {
             const dayAl = maryData.alimentacion.filter(x => x.date === w.dateStr);
             const sumProt = dayAl.reduce((a,b)=>a+b.prot,0);
             const sumCal = dayAl.reduce((a,b)=>a+b.cal,0);
             const hasData = dayAl.length > 0 || maryData.cardio.some(x=>x.date===w.dateStr) || maryData.salud.some(x=>x.date===w.dateStr);
 
-            let status = 'empty'; // 'empty', 'ok', 'fail'
+            let status = 'empty'; 
             if (hasData) {
               if (g.metricType === 'prot') {
                 status = sumProt >= g.targetValue ? 'ok' : 'fail';
