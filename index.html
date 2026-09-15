@@ -130,7 +130,7 @@
 
         <div class="pt-4 border-t border-[#c8e3dc] space-y-4">
           <div class="flex justify-between items-center">
-            <h4 class="font-black text-stone-800 text-sm">✨ Metas & Habit Tracker Semanal (L-M-X-J-V-S-D)</h4>
+            <h4 class="font-black text-stone-800 text-sm">✨ Metas & Habit Tracker Semanal</h4>
             <button onclick="openModalMetaCustom()" class="px-3 py-1 bg-[#b492cd] text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer">+ Nueva Meta</button>
           </div>
           <div id="custom-goals-container" class="space-y-3"></div>
@@ -275,11 +275,11 @@
     </div>
   </div>
 
-  <!-- MODAL METAS BASE (RANGOS) -->
+  <!-- MODAL METAS BASE -->
   <div id="modal-metas" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
-        <h3 class="text-base font-black text-stone-800">⚙️ Configurar Metas Base (Rangos)</h3>
+        <h3 class="text-base font-black text-stone-800">⚙️ Configurar Metas Base</h3>
         <button onclick="closeModal('modal-metas')" class="text-stone-400 font-bold cursor-pointer">✕</button>
       </div>
       <div class="space-y-3 text-xs">
@@ -505,11 +505,15 @@
       isCloudReady = true;
     } catch (e) { console.warn("Firebase:", e); }
 
-    const STORAGE_KEY = 'MARY_FITNESS_DATA_V7_FIX';
+    const STORAGE_KEY = 'MARY_FITNESS_DATA_V8';
 
     let maryData = {
-      metas: { calMin: 1600, calMax: 1700, protMin: 120, protMax: 140, fat: 65, carb: 200, cardio: 30, agua: 2.0 },
-      customGoals: [],
+      metas: { calMin: 1600, calMax: 1700, protMin: 80, protMax: 140, cardio: 30, agua: 2.0 },
+      customGoals: [
+        { id: 1, title: "Calorías (Déficit)", metricType: "cal", frequency: "Diaria", targetValue: 1700 },
+        { id: 2, title: "Proteína diaria", metricType: "prot", frequency: "Diaria", targetValue: 80 },
+        { id: 3, title: "Entrenamientos en la semana", metricType: "entreno", frequency: "Semanal", targetValue: 5 }
+      ],
       alimentacion: [],
       cardio: [],
       entrenamiento: [],
@@ -548,7 +552,13 @@
         loadDatabaseLocal();
       }
 
-      if (!Array.isArray(maryData.customGoals)) maryData.customGoals = [];
+      if (!Array.isArray(maryData.customGoals) || maryData.customGoals.length === 0) {
+        maryData.customGoals = [
+          { id: 1, title: "Calorías (Déficit)", metricType: "cal", frequency: "Diaria", targetValue: 1700 },
+          { id: 2, title: "Proteína diaria", metricType: "prot", frequency: "Diaria", targetValue: 80 },
+          { id: 3, title: "Entrenamientos en la semana", metricType: "entreno", frequency: "Semanal", targetValue: 5 }
+        ];
+      }
     }
 
     function loadDatabaseLocal() {
@@ -613,10 +623,10 @@
     }
 
     function openModalMetas() {
-      const m = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 120, protMax: 140, cardio: 30, agua: 2.0 };
+      const m = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 80, protMax: 140, cardio: 30, agua: 2.0 };
       document.getElementById('meta-cal-min').value = m.calMin || 1600;
       document.getElementById('meta-cal-max').value = m.calMax || 1700;
-      document.getElementById('meta-prot-min').value = m.protMin || 120;
+      document.getElementById('meta-prot-min').value = m.protMin || 80;
       document.getElementById('meta-prot-max').value = m.protMax || 140;
       document.getElementById('meta-cardio').value = m.cardio || 30;
       document.getElementById('meta-agua').value = m.agua || 2.0;
@@ -627,7 +637,7 @@
       maryData.metas = {
         calMin: parseFloat(document.getElementById('meta-cal-min').value || 1600),
         calMax: parseFloat(document.getElementById('meta-cal-max').value || 1700),
-        protMin: parseFloat(document.getElementById('meta-prot-min').value || 120),
+        protMin: parseFloat(document.getElementById('meta-prot-min').value || 80),
         protMax: parseFloat(document.getElementById('meta-prot-max').value || 140),
         cardio: parseFloat(document.getElementById('meta-cardio').value || 30),
         agua: parseFloat(document.getElementById('meta-agua').value || 2.0)
@@ -635,7 +645,6 @@
       saveDatabase(); closeModal('modal-metas'); renderAllViews(); showToast('Metas actualizadas');
     }
 
-    // MODALS & EDITS
     function openModalAlimentacion() {
       document.getElementById('alimentacion-edit-id').value = '';
       document.getElementById('alimentacion-date').value = new Date().toISOString().slice(0, 10);
@@ -923,7 +932,7 @@
       totalsCard.innerHTML = '';
 
       const list = maryData.alimentacion.filter(x => x.date >= from && x.date <= to).sort((a,b)=>b.date.localeCompare(a.date));
-      const metas = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 120 };
+      const metas = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 80 };
 
       if (list.length === 0) {
         container.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación en este rango.</p>`;
@@ -933,13 +942,13 @@
       let tCal = 0, tProt = 0, tCarb = 0, tFat = 0;
       list.forEach(al => {
         tCal += al.cal; tProt += al.prot; tCarb += al.carb; tFat += al.fat;
-        const cumplido = (al.cal >= metas.calMin && al.cal <= metas.calMax) && (al.prot >= metas.protMin);
+        const cumplido = (al.cal <= metas.calMax) && (al.prot >= metas.protMin);
         container.innerHTML += `
           <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
             <div>
               <div class="flex items-center gap-2">
                 <strong class="text-sm font-black text-stone-800">🥗 ${al.date} · ${al.nombre || 'Comida'} (${al.cant || ''} ${al.unidad || ''})</strong>
-                <span class="px-2 py-0.5 rounded-md font-bold ${cumplido ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${cumplido ? '✅ Meta Cumplida' : '⚠️ En Proceso'}</span>
+                <span class="px-2 py-0.5 rounded-md font-bold ${cumplido ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${cumplido ? '✅ Meta Cumplida' : '❌ Déficit Excedido'}</span>
               </div>
               <p class="text-stone-600 mt-1">🔥 Calorías: <strong>${al.cal} kcal</strong> | 🥩 Prot: <strong>${al.prot}g</strong> | 🍚 Carb: <strong>${al.carb}g</strong> | 🥑 Grasa: <strong>${al.fat}g</strong></p>
             </div>
@@ -1157,33 +1166,65 @@
 
       maryData.customGoals.forEach(g => {
         let trackerDaysHtml = '';
-        weekDays.forEach(w => {
-          const dayAl = maryData.alimentacion.find(x => x.date === w.dateStr) || { prot: 0, cal: 0 };
-          const dayCardios = maryData.cardio.filter(x => x.date === w.dateStr);
-          const totalCMin = dayCardios.reduce((a,b)=>a+b.min, 0);
-          const daySalud = maryData.salud.find(x => x.date === w.dateStr) || { agua: 0 };
-          const dayEntrenos = maryData.entrenamiento.filter(x => x.date === w.dateStr);
+        
+        if (g.frequency === 'Semanal') {
+          // Evaluación Semanal (ej. 5 entrenamientos en la semana)
+          let totalCount = 0;
+          if (g.metricType === 'entreno') {
+            totalCount = maryData.entrenamiento.filter(x => weekDays.some(w => w.dateStr === x.date)).length;
+          } else if (g.metricType === 'cardio_min') {
+            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date)).reduce((a,b)=>a+b.min,0);
+          }
+          const fulfilled = totalCount >= g.targetValue;
 
-          let fulfilled = false;
-          if (g.metricType === 'prot') fulfilled = (dayAl.prot >= g.targetValue);
-          else if (g.metricType === 'cal') fulfilled = (dayAl.cal >= g.targetValue);
-          else if (g.metricType === 'cardio_min') fulfilled = (totalCMin >= g.targetValue);
-          else if (g.metricType === 'agua') fulfilled = (daySalud.agua >= g.targetValue);
-          else if (g.metricType === 'entreno') fulfilled = (dayEntrenos.length > 0);
-
-          trackerDaysHtml += `
-            <div class="flex flex-col items-center">
-              <span class="text-[9px] font-extrabold text-stone-500 mb-1">${w.dayName}</span>
-              <div class="w-7 h-7 rounded-xl border flex items-center justify-center text-xs ${fulfilled ? 'bg-emerald-500/20 border-emerald-500/60 text-emerald-800 font-black' : 'bg-white border-[#c8e3dc] text-stone-400'}" title="${w.dateStr}">
-                ${fulfilled ? '✓' : '·'}
+          trackerDaysHtml = `
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-stone-600">Progreso semanal: ${totalCount} / ${g.targetValue}</span>
+              <div class="w-8 h-8 rounded-xl border flex items-center justify-center text-sm ${fulfilled ? 'bg-emerald-500/20 border-emerald-500 text-emerald-800 font-black' : 'bg-red-500/10 border-red-400 text-red-600 font-black'}">
+                ${fulfilled ? '✓' : '✗'}
               </div>
             </div>`;
-        });
+        } else {
+          // Evaluación Diaria
+          weekDays.forEach(w => {
+            const dayAl = maryData.alimentacion.filter(x => x.date === w.dateStr);
+            const sumProt = dayAl.reduce((a,b)=>a+b.prot,0);
+            const sumCal = dayAl.reduce((a,b)=>a+b.cal,0);
+            const hasData = dayAl.length > 0 || maryData.cardio.some(x=>x.date===w.dateStr) || maryData.salud.some(x=>x.date===w.dateStr);
+
+            let status = 'empty'; // 'empty', 'ok', 'fail'
+            if (hasData) {
+              if (g.metricType === 'prot') {
+                status = sumProt >= g.targetValue ? 'ok' : 'fail';
+              } else if (g.metricType === 'cal') {
+                status = sumCal <= g.targetValue ? 'ok' : 'fail';
+              }
+            }
+
+            let boxClass = 'bg-white border-[#c8e3dc] text-stone-300';
+            let symbol = '·';
+            if (status === 'ok') {
+              boxClass = 'bg-emerald-500/20 border-emerald-500/60 text-emerald-800 font-black';
+              symbol = '✓';
+            } else if (status === 'fail') {
+              boxClass = 'bg-red-500/20 border-red-500/60 text-red-600 font-black';
+              symbol = '✗';
+            }
+
+            trackerDaysHtml += `
+              <div class="flex flex-col items-center">
+                <span class="text-[9px] font-extrabold text-stone-500 mb-1">${w.dayName}</span>
+                <div class="w-7 h-7 rounded-xl border flex items-center justify-center text-xs ${boxClass}" title="${w.dateStr}">
+                  ${symbol}
+                </div>
+              </div>`;
+          });
+        }
 
         container.innerHTML += `
-          <div class="glass-card p-3 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div class="glass-card p-3 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-l-4 border-l-[#b492cd]">
             <div>
-              <span class="text-[9px] font-black bg-[#eaf4f1] px-2 py-0.5 rounded-md text-[#5fa89b] uppercase border border-[#c8e3dc]">${g.frequency} · Meta: ${g.targetValue}</span>
+              <span class="text-[9px] font-black bg-[#f3edf7] px-2 py-0.5 rounded-md text-[#7c529e] uppercase border border-[#d8c4e7]">${g.frequency} · Meta: ${g.targetValue}</span>
               <h5 class="font-black text-stone-800 text-xs mt-1">${g.title}</h5>
             </div>
             <div class="flex items-center space-x-2">
@@ -1249,9 +1290,13 @@
         let html = `<div class="glass-card p-4 rounded-2xl space-y-2 text-xs">
           <strong class="text-sm font-black text-stone-800 block pb-1 border-b border-[#c8e3dc]">📅 Fecha: ${d}</strong>`;
 
-        alList.forEach(al => {
-          html += `<p>🥗 <strong>Alimentación (${al.nombre || 'Comida'}):</strong> ${al.cal} kcal | Prot: ${al.prot}g | Carb: ${al.carb}g | Grasa: ${al.fat}g</p>`;
-        });
+        if (alList.length > 0) {
+          const sumCal = alList.reduce((a,b)=>a+b.cal,0);
+          const sumProt = alList.reduce((a,b)=>a+b.prot,0);
+          const sumCarb = alList.reduce((a,b)=>a+b.carb,0);
+          const sumFat = alList.reduce((a,b)=>a+b.fat,0);
+          html += `<p>🥗 <strong>Alimentación (Total Día):</strong> ${sumCal} kcal | Prot: ${sumProt}g | Carb: ${sumCarb}g | Grasa: ${sumFat}g</p>`;
+        }
         cardios.forEach(c => {
           html += `<p>🏃‍♀️ <strong>Cardio [${c.lugar}]:</strong> ${c.min} min | ${c.km} km | ${c.cal} kcal | HR: ${c.hr} lpm | Ritmo: ${c.ritmo}</p>`;
         });
@@ -1280,9 +1325,14 @@
 
       allDates.forEach(d => {
         report += `📅 *${d}*\n`;
-        fAl.filter(x => x.date === d).forEach(al => {
-          report += `🥗 ${al.nombre || 'Comida'}: ${al.cal} kcal | P:${al.prot}g C:${al.carb}g G:${al.fat}g\n`;
-        });
+        const alList = fAl.filter(x => x.date === d);
+        if (alList.length > 0) {
+          const sumCal = alList.reduce((a,b)=>a+b.cal,0);
+          const sumProt = alList.reduce((a,b)=>a+b.prot,0);
+          const sumCarb = alList.reduce((a,b)=>a+b.carb,0);
+          const sumFat = alList.reduce((a,b)=>a+b.fat,0);
+          report += `🥗 Alimentos (Total): ${sumCal} kcal | P:${sumProt}g C:${sumCarb}g G:${sumFat}g\n`;
+        }
         
         fCardio.filter(x => x.date === d).forEach(c => {
           report += `🏃‍♀️ Cardio (${c.lugar}): ${c.min}m | ${c.km}km | ${c.cal}kcal | Ritmo: ${c.ritmo}\n`;
