@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MARY · Fitness & Performance Suite</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; font-family: var(--font-main); }
+    
+    /* Fondo fresco y elegante: Turquesa, Verde y Lila muy sutiles */
+    body {
+      background: 
+        radial-gradient(circle at 10% 15%, rgba(164, 219, 208, 0.5) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(205, 186, 224, 0.45) 0%, transparent 45%),
+        linear-gradient(135deg, #f4faf8 0%, #ebf5f1 50%, #f3edf7 100%);
+      color: #2c3e35;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background-attachment: fixed;
+    }
+
+    .hidden { display: none !important; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #e2ede7; }
+    ::-webkit-scrollbar-thumb { background: #8fbdb3; border-radius: 999px; }
+
+    /* Efecto Glassmorphism Suave y Luminoso */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(164, 219, 208, 0.6);
+      box-shadow: 0 15px 35px rgba(60, 90, 80, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .glass-card-solid {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(164, 219, 208, 0.8);
+      box-shadow: 0 20px 40px rgba(60, 90, 80, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
+    }
+
+    .nav-btn {
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .nav-btn.active {
+      background: linear-gradient(135deg, #5fa89b 0%, #4a8c80) !important;
+      color: #ffffff !important;
+      font-weight: 800;
+      box-shadow: 0 6px 20px rgba(95, 168, 155, 0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+
+    .modal-overlay {
+      background-color: rgba(44, 62, 53, 0.5);
+      backdrop-filter: blur(6px);
+      z-index: 99999 !important;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-[#a4dbd0] selection:text-[#2c3e35]">
+
+  <!-- HEADER -->
+  <header class="glass-card-solid sticky top-0 z-40 border-b border-[#c8e3dc]">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#5fa89b] to-[#b492cd] flex items-center justify-center font-black text-white text-lg shadow-lg">🍏</div>
+        <div>
+          <h1 class="text-base font-black tracking-wider uppercase text-stone-800 leading-none">MARY <span class="text-[#5fa89b] text-xs font-bold">FITNESS SUITE</span></h1>
+          <p class="text-[11px] font-medium text-stone-500 italic mt-0.5">"Construyendo constancia paso a paso"</p>
+        </div>
+      </div>
+
+      <nav class="flex flex-wrap items-center justify-center gap-1.5 bg-[#eaf4f1] p-1.5 rounded-2xl border border-[#c8e3dc]">
+        <button onclick="switchTab('resumen')" id="tab-btn-resumen" class="nav-btn active px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">📊 Resumen</button>
+        <button onclick="switchTab('alimentacion')" id="tab-btn-alimentacion" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">🥗 Alimentación</button>
+        <button onclick="switchTab('cardio')" id="tab-btn-cardio" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">🏃‍♀️ Cardio</button>
+        <button onclick="switchTab('entrenamiento')" id="tab-btn-entrenamiento" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">💪 Entreno</button>
+        <button onclick="switchTab('calendario')" id="tab-btn-calendario" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">🗓️ Calendario</button>
+        <button onclick="switchTab('salud')" id="tab-btn-salud" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">💧 Bienestar</button>
+      </nav>
+
+      <div class="flex items-center space-x-2">
+        <span id="cloud-badge" class="text-[9px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">☁️ Sincronizado</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- SELECTOR DE FECHA GLOBAL -->
+    <div class="glass-card rounded-3xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <span class="text-xs font-black uppercase text-stone-700 tracking-wider">📅 Día Seleccionado:</span>
+        <input type="date" id="global-date" onchange="handleGlobalDateChange(this.value)" class="bg-white border border-[#c8e3dc] rounded-xl px-3 py-1.5 text-xs font-black text-stone-800 focus:outline-none">
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openModalRegistroRapido()" class="px-4 py-2 bg-[#5fa89b] hover:bg-[#4a8c80] text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer">+ Registrar Jornada de Hoy</button>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 1: RESUMEN -->
+    <section id="pane-resumen" class="tab-pane space-y-6">
+      <div class="glass-card-solid rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+          <div>
+            <h3 class="text-base font-black text-stone-800">🎯 Estado de Metas & Progreso Semanal</h3>
+            <p class="text-xs text-stone-500">Resumen general listo para compartir y revisar</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="resumen-kpis">
+          <div class="glass-card p-4 rounded-2xl space-y-2">
+            <span class="text-[10px] font-extrabold text-stone-500 uppercase">Calorías Promedio</span>
+            <p class="text-xl font-black text-stone-800" id="kpi-cal">0 kcal</p>
+          </div>
+          <div class="glass-card p-4 rounded-2xl space-y-2">
+            <span class="text-[10px] font-extrabold text-stone-500 uppercase">Entrenamientos de Fuerza</span>
+            <p class="text-xl font-black text-[#5fa89b]" id="kpi-strength">0 sesiones</p>
+          </div>
+          <div class="glass-card p-4 rounded-2xl space-y-2">
+            <span class="text-[10px] font-extrabold text-stone-500 uppercase">Cardio / Zona 2</span>
+            <p class="text-xl font-black text-[#b492cd]" id="kpi-cardio">0 min</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: ALIMENTACIÓN -->
+    <section id="pane-alimentacion" class="tab-pane space-y-6 hidden">
+      <div class="glass-card-solid rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+          <div>
+            <h3 class="text-base font-black text-stone-800">🥗 Control de Alimentación & Macros</h3>
+            <p class="text-xs text-stone-500">Ingreso diario de calorías, proteínas, grasas y carbohidratos</p>
+          </div>
+          <button onclick="openModalAlimentacion()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Alimentos del Día</button>
+        </div>
+        <div id="alimentacion-content" class="space-y-4">
+          <p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación para esta fecha.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: CARDIO -->
+    <section id="pane-cardio" class="tab-pane space-y-6 hidden">
+      <div class="glass-card-solid rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+          <div>
+            <h3 class="text-base font-black text-stone-800">🏃‍♀️ Cardio & Running (Treadmill / Aire Libre)</h3>
+            <p class="text-xs text-stone-500">Duración, distancia, calorías activas y ritmo promedio</p>
+          </div>
+          <button onclick="openModalCardio()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Sesión de Cardio</button>
+        </div>
+        <div id="cardio-content" class="space-y-4">
+          <p class="text-xs text-stone-400 text-center py-6">Sin registros de cardio en esta fecha.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: ENTRENAMIENTO -->
+    <section id="pane-entrenamiento" class="tab-pane space-y-6 hidden">
+      <div class="glass-card-solid rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+          <div>
+            <h3 class="text-base font-black text-stone-800">💪 Rutinas de Fuerza (Estilo Hevy)</h3>
+            <p class="text-xs text-stone-500">Torso, Pierna y control de series, repeticiones y pesos (Lbs/Kg)</p>
+          </div>
+          <button onclick="openModalRutina()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Iniciar / Crear Rutina</button>
+        </div>
+        <div id="entrenamiento-content" class="space-y-4">
+          <p class="text-xs text-stone-400 text-center py-6">No hay entrenamientos de fuerza registrados hoy.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 5: CALENDARIO -->
+    <section id="pane-calendario" class="tab-pane space-y-6 hidden">
+      <div class="glass-card-solid rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+          <div>
+            <h3 class="text-base font-black text-stone-800">🗓️ Calendario de Actividad</h3>
+            <p class="text-xs text-stone-500">Visualiza qué días hiciste cardio, fuerza o descanso codificado por color</p>
+          </div>
+        </div>
+        <div id="calendar-view" class="py-4 text-center text-xs text-stone-500">
+          Vista de calendario interactivo en desarrollo para la siguiente actualización.
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 6: SALUD Y BIENESTAR -->
+    <section id="pane-salud" class="tab-pane space-y-6 hidden">
+      <div class="glass-card-solid rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+          <div>
+            <h3 class="text-base font-black text-stone-800">💧 Salud & Bienestar</h3>
+            <p class="text-xs text-stone-500">Agua, sueño, meditación y control de dulces</p>
+          </div>
+          <button onclick="openModalSalud()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Bienestar Diario</button>
+        </div>
+        <div id="salud-content" class="space-y-4">
+          <p class="text-xs text-stone-400 text-center py-6">Sin registros de bienestar en esta fecha.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-[#2c3e35] text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none border border-white/20">
+    <span>✨</span>
+    <span id="toast-text">Acción completada</span>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCnhvfyXpwJdYOQFCvsyHDhgw9F3X7ARR4",
+      authDomain: "marpk-816dd.firebaseapp.com",
+      projectId: "marpk-816dd",
+      storageBucket: "marpk-816dd.firebasestorage.app",
+      messagingSenderId: "189644122232",
+      appId: "1:189644122232:web:ed7894f1510a373d44658d",
+      measurementId: "G-G1948VXPT6"
+    };
+
+    let db = null;
+    let isCloudReady = false;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      isCloudReady = true;
+    } catch (e) { console.warn("Firebase:", e); }
+
+    const STORAGE_KEY = 'MARY_FITNESS_DATA_V1';
+
+    let maryData = {
+      alimentacion: [],
+      cardio: [],
+      entrenamiento: [],
+      salud: []
+    };
+
+    let currentDate = new Date().toISOString().slice(0, 10);
+
+    function getTodayString() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    async function initApp() {
+      currentDate = getTodayString();
+      document.getElementById('global-date').value = currentDate;
+      await loadDatabase();
+      renderAllViews();
+    }
+
+    async function loadDatabase() {
+      try {
+        if (isCloudReady && db) {
+          const doc = await db.collection("mary_fitness").doc("user_data").get();
+          if (doc.exists) {
+            maryData = Object.assign({}, maryData, doc.data());
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(maryData));
+          } else {
+            loadDatabaseLocal();
+          }
+        } else {
+          loadDatabaseLocal();
+        }
+      } catch (e) {
+        loadDatabaseLocal();
+      }
+    }
+
+    function loadDatabaseLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) maryData = Object.assign({}, maryData, JSON.parse(raw));
+      } catch (e) { console.warn(e); }
+    }
+
+    function saveDatabase() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(maryData));
+        if (isCloudReady && db) {
+          db.collection("mary_fitness").doc("user_data").set(maryData).catch(e => console.warn(e));
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast'), txt = document.getElementById('toast-text');
+      if (!t || !txt) return;
+      txt.innerText = msg;
+      t.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2500);
+    }
+
+    function switchTab(tabId) {
+      ['resumen', 'alimentacion', 'cardio', 'entrenamiento', 'calendario', 'salud'].forEach(id => {
+        const pane = document.getElementById(`pane-${id}`);
+        const btn = document.getElementById(`tab-btn-${id}`);
+        if (pane) { if (id === tabId) pane.classList.remove('hidden'); else pane.classList.add('hidden'); }
+        if (btn) { if (id === tabId) btn.classList.add('active'); else btn.classList.remove('active'); }
+      });
+      renderAllViews();
+    }
+
+    function handleGlobalDateChange(val) {
+      currentDate = val;
+      renderAllViews();
+    }
+
+    function renderAllViews() {
+      // Renderizados dinámicos según fecha seleccionada
+    }
+
+    // Funciones placeholders para modales rápidos
+    function openModalAlimentacion() { showToast('Módulo de alimentación listo para programar'); }
+    function openModalCardio() { showToast('Módulo de cardio listo para programar'); }
+    function openModalRutina() { showToast('Módulo de fuerza estilo Hevy listo para programar'); }
+    function openModalSalud() { showToast('Módulo de bienestar listo para programar'); }
+    function openModalRegistroRapido() { showToast('Panel general listo'); }
+
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
