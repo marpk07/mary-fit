@@ -105,13 +105,18 @@
   <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
 
+    <div class="glass-card rounded-3xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <span class="text-xs font-black uppercase text-stone-700 tracking-wider">⚡ Panel de Control Activo</span>
+      <button onclick="openModalMetas()" class="px-4 py-2 bg-[#b492cd] hover:opacity-90 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer">⚙️ Configurar Metas Base</button>
+    </div>
+
     <!-- PESTAÑA 1: RESUMEN GENERAL -->
     <section id="pane-resumen" class="tab-pane space-y-6">
       <div class="glass-card-solid rounded-3xl p-6 space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">Resumen General</h3>
-            <p class="text-xs text-stone-500">Métricas y reporte general</p>
+            <p class="text-xs text-stone-500">Métricas y reporte por rango de fechas</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-xs font-bold text-stone-600">Desde:</span>
@@ -123,7 +128,6 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="resumen-range-kpis"></div>
 
-        <!-- SECCIÓN DE METAS & CHECKLIST SEMANAL (ESTILO MAPKR) -->
         <div class="pt-4 border-t border-[#c8e3dc] space-y-4">
           <div class="flex justify-between items-center">
             <h4 class="font-black text-stone-800 text-sm">✨ Metas & Habit Tracker Semanal (L-M-X-J-V-S-D)</h4>
@@ -145,7 +149,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">🥗 Control de Alimentación & Macros</h3>
-            <p class="text-xs text-stone-500">Registro detallado de comidas y macros</p>
+            <p class="text-xs text-stone-500">Registro detallado con cantidades y totales</p>
           </div>
           <div class="flex items-center gap-2">
             <input type="date" id="al-from" onchange="renderAlimentacionView()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 text-xs font-bold">
@@ -153,6 +157,7 @@
             <button onclick="openModalAlimentacion()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Comida</button>
           </div>
         </div>
+        <div id="alimentacion-totals-card"></div>
         <div id="alimentacion-content" class="space-y-4"></div>
       </div>
     </section>
@@ -163,7 +168,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">🏃‍♀️ Cardio & Running</h3>
-            <p class="text-xs text-stone-500">Sesiones en cinta, exterior, bici u otros</p>
+            <p class="text-xs text-stone-500">Sesiones y totales de distancia</p>
           </div>
           <div class="flex items-center gap-2">
             <input type="date" id="ca-from" onchange="renderCardioView()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 text-xs font-bold">
@@ -171,6 +176,7 @@
             <button onclick="openModalCardio()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar</button>
           </div>
         </div>
+        <div id="cardio-totals-card"></div>
         <div id="cardio-content" class="space-y-4"></div>
       </div>
     </section>
@@ -181,7 +187,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">💪 Registro de Fuerza & PRs</h3>
-            <p class="text-xs text-stone-500">Ejercicios, series, peso mixto y PRs resaltados</p>
+            <p class="text-xs text-stone-500">Series, peso mixto y PRs marcados</p>
           </div>
           <div class="flex items-center gap-2">
             <input type="date" id="en-from" onchange="renderEntrenamientoView()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 text-xs font-bold">
@@ -217,7 +223,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">🍎 Salud & Bienestar Diario</h3>
-            <p class="text-xs text-stone-500">Agua, sueño, calidad, ánimo, periodo y dulces</p>
+            <p class="text-xs text-stone-500">Agua, sueño, ánimo, periodo y totales</p>
           </div>
           <div class="flex items-center gap-2">
             <input type="date" id="sa-from" onchange="renderSaludView()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 text-xs font-bold">
@@ -225,6 +231,7 @@
             <button onclick="openModalSalud()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar</button>
           </div>
         </div>
+        <div id="salud-totals-card"></div>
         <div id="salud-content" class="space-y-4"></div>
       </div>
     </section>
@@ -239,7 +246,7 @@
         <button onclick="closeModal('modal-meta-custom')" class="text-stone-400 font-bold cursor-pointer">✕</button>
       </div>
       <div class="space-y-3 text-xs">
-        <div><label class="font-bold text-stone-600 block mb-1">Título de la Meta</label><input type="text" id="gm-title" placeholder="Ej. Proteína Diaria / 7km Cardio" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div><label class="font-bold text-stone-600 block mb-1">Título de la Meta</label><input type="text" id="gm-title" placeholder="Ej. Proteína Diaria" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-stone-600 block mb-1">Tipo de Métrica</label>
@@ -259,7 +266,7 @@
             </select>
           </div>
         </div>
-        <div><label class="font-bold text-stone-600 block mb-1">Valor Objetivo (Meta numérica)</label><input type="number" step="0.1" id="gm-target" placeholder="130" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div><label class="font-bold text-stone-600 block mb-1">Valor Objetivo (Mínimo)</label><input type="number" step="0.1" id="gm-target" placeholder="130" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
       </div>
       <div class="pt-2 flex justify-end space-x-2">
         <button onclick="closeModal('modal-meta-custom')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
@@ -268,22 +275,63 @@
     </div>
   </div>
 
+  <!-- MODAL METAS BASE (RANGOS) -->
+  <div id="modal-metas" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
+      <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
+        <h3 class="text-base font-black text-stone-800">⚙️ Configurar Metas Base (Rangos)</h3>
+        <button onclick="closeModal('modal-metas')" class="text-stone-400 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Calorías Mín</label><input type="number" id="meta-cal-min" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Calorías Máx</label><input type="number" id="meta-cal-max" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Proteína Mín (g)</label><input type="number" id="meta-prot-min" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Proteína Máx (g)</label><input type="number" id="meta-prot-max" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Cardio Mín (min)</label><input type="number" id="meta-cardio" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Agua Mín (L)</label><input type="number" step="0.1" id="meta-agua" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-metas')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
+        <button onclick="saveMetas()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL ALIMENTACIÓN -->
   <div id="modal-alimentacion" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-md w-full p-6 space-y-4 border border-[#c8e3dc] max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
-        <h3 class="text-base font-black text-stone-800">🥗 Registrar Comida / Alimentación</h3>
+        <h3 class="text-base font-black text-stone-800">🥗 Registrar Comida</h3>
         <button onclick="closeModal('modal-alimentacion')" class="text-stone-400 font-bold cursor-pointer">✕</button>
       </div>
       <div class="space-y-3 text-xs">
         <input type="hidden" id="alimentacion-edit-id">
         <div><label class="font-bold text-stone-600 block mb-1">Fecha</label><input type="date" id="alimentacion-date" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
-        <div><label class="font-bold text-stone-600 block mb-1">Nombre / Alimento (ej. Panqueca, Arroz con Pollo...)</label><input type="text" id="alimentacion-nombre" placeholder="Descripción de la comida" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div><label class="font-bold text-stone-600 block mb-1">Alimento / Comida</label><input type="text" id="alimentacion-nombre" placeholder="Ej. Panqueca" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Cantidad</label><input type="number" step="0.1" id="alimentacion-cant" placeholder="150" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+          <div>
+            <label class="font-bold text-stone-600 block mb-1">Unidad</label>
+            <select id="alimentacion-unidad" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800">
+              <option value="g">Gramos (g)</option>
+              <option value="ml">Mililitros (ml)</option>
+              <option value="unidad">Unidades</option>
+              <option value="taza">Tazas</option>
+              <option value="cucharada">Cucharadas</option>
+            </select>
+          </div>
+        </div>
         <div><label class="font-bold text-stone-600 block mb-1">Calorías (kcal)</label><input type="number" id="alimentacion-cal" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
         <div class="grid grid-cols-3 gap-2">
-          <div><label class="font-bold text-stone-600 block mb-1">Prot (g)</label><input type="number" id="alimentacion-prot" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
-          <div><label class="font-bold text-stone-600 block mb-1">Grasa (g)</label><input type="number" id="alimentacion-fat" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
-          <div><label class="font-bold text-stone-600 block mb-1">Carb (g)</label><input type="number" id="alimentacion-carb" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">🥩 Prot (g)</label><input type="number" id="alimentacion-prot" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">🍚 Carb (g)</label><input type="number" id="alimentacion-carb" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">🥑 Grasa (g)</label><input type="number" id="alimentacion-fat" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
         </div>
       </div>
       <div class="pt-2 flex justify-end space-x-2">
@@ -334,7 +382,7 @@
   <div id="modal-entrenamiento" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-lg w-full p-6 space-y-4 border border-[#c8e3dc] max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
-        <h3 class="text-base font-black text-stone-800">💪 Registro de Fuerza & Ejercicios</h3>
+        <h3 class="text-base font-black text-stone-800">💪 Registro de Fuerza & PRs</h3>
         <button onclick="closeModal('modal-entrenamiento')" class="text-stone-400 font-bold cursor-pointer">✕</button>
       </div>
       <div class="space-y-4 text-xs">
@@ -361,7 +409,7 @@
 
         <div class="space-y-3 pt-2 border-t border-[#c8e3dc]">
           <div class="flex justify-between items-center">
-            <span class="font-black text-stone-800">📋 Ejercicios & Series (Lbs / Kg mix)</span>
+            <span class="font-black text-stone-800">📋 Ejercicios, Series & PR (👑)</span>
             <button onclick="addExerciseRow()" class="px-3 py-1 bg-[#5fa89b] text-white rounded-lg font-bold text-[11px]">+ Añadir Ejercicio</button>
           </div>
           <div id="ejercicios-container" class="space-y-3"></div>
@@ -457,10 +505,10 @@
       isCloudReady = true;
     } catch (e) { console.warn("Firebase:", e); }
 
-    const STORAGE_KEY = 'MARY_FITNESS_DATA_V6';
+    const STORAGE_KEY = 'MARY_FITNESS_DATA_V7';
 
     let maryData = {
-      metas: { cal: 2000, prot: 130, fat: 65, carb: 200, cardio: 30, agua: 2.0 },
+      metas: { calMin: 1600, calMax: 1700, protMin: 120, protMax: 140, fat: 65, carb: 200, cardio: 30, agua: 2.0 },
       customGoals: [],
       alimentacion: [],
       cardio: [],
@@ -565,38 +613,39 @@
     }
 
     function openModalMetas() {
-      const m = maryData.metas || { cal: 2000, prot: 130, fat: 65, carb: 200, cardio: 30, agua: 2.0 };
-      document.getElementById('meta-cal').value = m.cal;
-      document.getElementById('meta-prot').value = m.prot;
-      document.getElementById('meta-fat').value = m.fat;
-      document.getElementById('meta-carb').value = m.carb;
-      document.getElementById('meta-cardio').value = m.cardio;
-      document.getElementById('meta-agua').value = m.agua;
+      const m = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 120, protMax: 140, cardio: 30, agua: 2.0 };
+      document.getElementById('meta-cal-min').value = m.calMin || 1600;
+      document.getElementById('meta-cal-max').value = m.calMax || 1700;
+      document.getElementById('meta-prot-min').value = m.protMin || 120;
+      document.getElementById('meta-prot-max').value = m.protMax || 140;
+      document.getElementById('meta-cardio').value = m.cardio || 30;
+      document.getElementById('meta-agua').value = m.agua || 2.0;
       openModal('modal-metas');
     }
 
     function saveMetas() {
       maryData.metas = {
-        cal: parseFloat(document.getElementById('meta-cal').value || 2000),
-        prot: parseFloat(document.getElementById('meta-prot').value || 130),
-        fat: parseFloat(document.getElementById('meta-fat').value || 65),
-        carb: parseFloat(document.getElementById('meta-carb').value || 200),
+        calMin: parseFloat(document.getElementById('meta-cal-min').value || 1600),
+        calMax: parseFloat(document.getElementById('meta-cal-max').value || 1700),
+        protMin: parseFloat(document.getElementById('meta-prot-min').value || 120),
+        protMax: parseFloat(document.getElementById('meta-prot-max').value || 140),
         cardio: parseFloat(document.getElementById('meta-cardio').value || 30),
         agua: parseFloat(document.getElementById('meta-agua').value || 2.0)
       };
       saveDatabase(); closeModal('modal-metas'); renderAllViews(); showToast('Metas actualizadas');
     }
 
-    // MODAL TRIGGERS & EDITS
+    // MODALS & EDITS
     function openModalAlimentacion() {
       document.getElementById('alimentacion-edit-id').value = '';
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById('alimentacion-date').value = today;
+      document.getElementById('alimentacion-date').value = new Date().toISOString().slice(0, 10);
       document.getElementById('alimentacion-nombre').value = '';
+      document.getElementById('alimentacion-cant').value = '';
+      document.getElementById('alimentacion-unidad').value = 'g';
       document.getElementById('alimentacion-cal').value = '';
       document.getElementById('alimentacion-prot').value = '';
-      document.getElementById('alimentacion-fat').value = '';
       document.getElementById('alimentacion-carb').value = '';
+      document.getElementById('alimentacion-fat').value = '';
       openModal('modal-alimentacion');
     }
 
@@ -606,17 +655,18 @@
       document.getElementById('alimentacion-edit-id').value = item.id;
       document.getElementById('alimentacion-date').value = item.date;
       document.getElementById('alimentacion-nombre').value = item.nombre || '';
+      document.getElementById('alimentacion-cant').value = item.cant || '';
+      document.getElementById('alimentacion-unidad').value = item.unidad || 'g';
       document.getElementById('alimentacion-cal').value = item.cal || '';
       document.getElementById('alimentacion-prot').value = item.prot || '';
-      document.getElementById('alimentacion-fat').value = item.fat || '';
       document.getElementById('alimentacion-carb').value = item.carb || '';
+      document.getElementById('alimentacion-fat').value = item.fat || '';
       openModal('modal-alimentacion');
     }
 
     function openModalCardio() {
       document.getElementById('cardio-edit-id').value = '';
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById('cardio-date').value = today;
+      document.getElementById('cardio-date').value = new Date().toISOString().slice(0, 10);
       document.getElementById('cardio-min').value = '';
       document.getElementById('cardio-km').value = '';
       document.getElementById('cardio-cal').value = '';
@@ -641,8 +691,7 @@
 
     function openModalRutina() {
       document.getElementById('entreno-edit-id').value = '';
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById('entreno-date').value = today;
+      document.getElementById('entreno-date').value = new Date().toISOString().slice(0, 10);
       document.getElementById('entreno-tiempo').value = '';
       document.getElementById('entreno-cal').value = '';
       document.getElementById('entreno-hr').value = '';
@@ -672,7 +721,7 @@
       openModal('modal-entrenamiento');
     }
 
-    function addExerciseRow(ejName = '', seriesList = [{ peso: 0, reps: 0, unidad: 'lbs' }]) {
+    function addExerciseRow(ejName = '', seriesList = [{ peso: 0, reps: 0, unidad: 'lbs', pr: false }]) {
       const container = document.getElementById('ejercicios-container');
       let seriesHtml = '';
       seriesList.forEach((s, idx) => {
@@ -685,6 +734,9 @@
               <option value="kg" ${s.unidad==='kg'?'selected':''}>Kg</option>
             </select>
             <input type="number" placeholder="Reps" value="${s.reps || ''}" class="w-16 bg-white border border-[#c8e3dc] rounded-lg px-2 py-1 text-xs font-bold serie-reps">
+            <label class="flex items-center gap-1 text-[11px] font-bold text-[#b492cd] cursor-pointer" title="Marcar como PR">
+              <input type="checkbox" ${s.pr ? 'checked' : ''} class="accent-[#b492cd] w-3.5 h-3.5 serie-pr"> 👑 PR
+            </label>
             <button onclick="this.closest('.serie-item').remove()" class="text-red-400 font-bold px-1 text-xs">✕</button>
           </div>`;
       });
@@ -714,14 +766,16 @@
           <option value="kg">Kg</option>
         </select>
         <input type="number" placeholder="Reps" class="w-16 bg-white border border-[#c8e3dc] rounded-lg px-2 py-1 text-xs font-bold serie-reps">
+        <label class="flex items-center gap-1 text-[11px] font-bold text-[#b492cd] cursor-pointer" title="Marcar como PR">
+          <input type="checkbox" class="accent-[#b492cd] w-3.5 h-3.5 serie-pr"> 👑 PR
+        </label>
         <button onclick="this.closest('.serie-item').remove()" class="text-red-400 font-bold px-1 text-xs">✕</button>`;
       list.appendChild(div);
     }
 
     function openModalSalud() {
       document.getElementById('salud-edit-id').value = '';
-      const today = new Date().toISOString().slice(0, 10);
-      document.getElementById('salud-date').value = today;
+      document.getElementById('salud-date').value = new Date().toISOString().slice(0, 10);
       document.getElementById('salud-agua').value = '';
       document.getElementById('salud-sueno').value = '';
       document.getElementById('salud-calidad-sueno').value = 'Excelente 🌟';
@@ -754,10 +808,12 @@
         id: editId ? parseInt(editId) : Date.now(),
         date: document.getElementById('alimentacion-date').value,
         nombre: document.getElementById('alimentacion-nombre').value || 'Comida',
+        cant: parseFloat(document.getElementById('alimentacion-cant').value || 0),
+        unidad: document.getElementById('alimentacion-unidad').value,
         cal: parseFloat(document.getElementById('alimentacion-cal').value || 0),
         prot: parseFloat(document.getElementById('alimentacion-prot').value || 0),
-        fat: parseFloat(document.getElementById('alimentacion-fat').value || 0),
-        carb: parseFloat(document.getElementById('alimentacion-carb').value || 0)
+        carb: parseFloat(document.getElementById('alimentacion-carb').value || 0),
+        fat: parseFloat(document.getElementById('alimentacion-fat').value || 0)
       };
       if (editId) {
         maryData.alimentacion = maryData.alimentacion.map(x => x.id === parseInt(editId) ? item : x);
@@ -805,7 +861,8 @@
           series.push({
             peso: parseFloat(s.querySelector('.serie-peso').value || 0),
             unidad: s.querySelector('.serie-unidad').value,
-            reps: parseInt(s.querySelector('.serie-reps').value || 0)
+            reps: parseInt(s.querySelector('.serie-reps').value || 0),
+            pr: s.querySelector('.serie-pr').checked
           });
         });
         ejercicios.push({ nombre, series });
@@ -861,26 +918,30 @@
       const from = document.getElementById('al-from').value;
       const to = document.getElementById('al-to').value;
       const container = document.getElementById('alimentacion-content');
+      const totalsCard = document.getElementById('alimentacion-totals-card');
       container.innerHTML = '';
+      totalsCard.innerHTML = '';
 
       const list = maryData.alimentacion.filter(x => x.date >= from && x.date <= to).sort((a,b)=>b.date.localeCompare(a.date));
-      const metas = maryData.metas || { cal: 2000, prot: 130 };
+      const metas = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 120 };
 
       if (list.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación en este rango.</p>`;
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación en este rango.</p>";
         return;
       }
 
+      let tCal = 0, tProt = 0, tCarb = 0, tFat = 0;
       list.forEach(al => {
-        const cumplido = al.cal >= metas.cal * 0.9 && al.prot >= metas.prot;
+        tCal += al.cal; tProt += al.prot; tCarb += al.carb; tFat += al.fat;
+        const cumplido = (al.cal >= metas.calMin && al.cal <= metas.calMax) && (al.prot >= metas.protMin);
         container.innerHTML += `
           <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
             <div>
               <div class="flex items-center gap-2">
-                <strong class="text-sm font-black text-stone-800">🥗 ${al.date} · ${al.nombre || 'Comida'}</strong>
+                <strong class="text-sm font-black text-stone-800">🥗 ${al.date} · ${al.nombre || 'Comida'} (${al.cant || ''} ${al.unidad || ''})</strong>
                 <span class="px-2 py-0.5 rounded-md font-bold ${cumplido ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${cumplido ? '✅ Meta Cumplida' : '⚠️ En Proceso'}</span>
               </div>
-              <p class="text-stone-600 mt-1">🔥 Calorías: <strong>${al.cal} kcal</strong> | 🥩 Proteína: <strong>${al.prot}g</strong> | 🥑 Grasa: <strong>${al.fat}g</strong> | 🍚 Carbs: <strong>${al.carb}g</strong></p>
+              <p class="text-stone-600 mt-1">🔥 Calorías: <strong>${al.cal} kcal</strong> | 🥩 Prot: <strong>${al.prot}g</strong> | 🍚 Carb: <strong>${al.carb}g</strong> | 🥑 Grasa: <strong>${al.fat}g</strong></p>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="editAlimentacion(${al.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold">✏️</button>
@@ -888,13 +949,26 @@
             </div>
           </div>`;
       });
+
+      totalsCard.innerHTML = `
+        <div class="glass-card-solid p-4 rounded-2xl mb-4 flex flex-wrap justify-between items-center text-xs bg-emerald-50/50">
+          <strong class="font-black text-stone-800">📊 TOTALES DEL RANGO SELECCIONADO:</strong>
+          <div class="flex gap-4 font-bold text-stone-700">
+            <span>🔥 Cal: ${tCal} kcal</span>
+            <span>🥩 Prot: ${tProt}g</span>
+            <span>🍚 Carb: ${tCarb}g</span>
+            <span>🥑 Grasa: ${tFat}g</span>
+          </div>
+        </div>`;
     }
 
     function renderCardioView() {
       const from = document.getElementById('ca-from').value;
       const to = document.getElementById('ca-to').value;
       const container = document.getElementById('cardio-content');
+      const totalsCard = document.getElementById('cardio-totals-card');
       container.innerHTML = '';
+      totalsCard.innerHTML = '';
 
       const list = maryData.cardio.filter(x => x.date >= from && x.date <= to).sort((a,b)=>b.date.localeCompare(a.date));
       if (list.length === 0) {
@@ -902,7 +976,9 @@
         return;
       }
 
+      let tKm = 0, tMin = 0, tCal = 0;
       list.forEach(c => {
+        tKm += c.km; tMin += c.min; tCal += c.cal;
         container.innerHTML += `
           <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
             <div>
@@ -915,6 +991,16 @@
             </div>
           </div>`;
       });
+
+      totalsCard.innerHTML = `
+        <div class="glass-card-solid p-4 rounded-2xl mb-4 flex flex-wrap justify-between items-center text-xs bg-purple-50/50">
+          <strong class="font-black text-stone-800">📊 TOTALES DE CARDIO EN EL RANGO:</strong>
+          <div class="flex gap-4 font-bold text-stone-700">
+            <span>📍 Distancia: ${tKm.toFixed(2)} km</span>
+            <span>⏱️ Tiempo: ${tMin} min</span>
+            <span>🔥 Calorías: ${tCal} kcal</span>
+          </div>
+        </div>`;
     }
 
     function renderEntrenamientoView() {
@@ -932,16 +1018,8 @@
       list.forEach(e => {
         let ejHtml = '';
         (e.ejercicios || []).forEach((ej, idx) => {
-          let maxVal = -1;
-          let maxIdx = -1;
-          ej.series.forEach((s, sidx) => {
-            let pConv = s.unidad === 'kg' ? s.peso * 2.20462 : s.peso;
-            if (pConv > maxVal) { maxVal = pConv; maxIdx = sidx; }
-          });
-
           let sHtml = ej.series.map((s, sidx) => {
-            const isPR = (sidx === maxIdx && s.peso > 0);
-            return `<span class="${isPR ? 'bg-[#b492cd]/40 border-[#b492cd] text-[#42225c] font-black' : 'bg-white/80 border-[#c8e3dc] text-stone-700'} px-2 py-0.5 rounded border text-[10px] font-bold">S${sidx+1}: ${s.peso} ${s.unidad} × ${s.reps} reps ${isPR ? '👑 PR' : ''}</span>`;
+            return `<span class="${s.pr ? 'bg-[#b492cd]/40 border-[#b492cd] text-[#42225c] font-black' : 'bg-white/80 border-[#c8e3dc] text-stone-700'} px-2 py-0.5 rounded border text-[10px] font-bold">S${sidx+1}: ${s.peso} ${s.unidad} × ${s.reps} reps ${s.pr ? '👑 PR' : ''}</span>`;
           }).join(' ');
 
           ejHtml += `<div class="mt-1 text-stone-700"><strong>${idx+1}. ${ej.nombre}</strong> — ${sHtml}</div>`;
@@ -967,7 +1045,9 @@
       const from = document.getElementById('sa-from').value;
       const to = document.getElementById('sa-to').value;
       const container = document.getElementById('salud-content');
+      const totalsCard = document.getElementById('salud-totals-card');
       container.innerHTML = '';
+      totalsCard.innerHTML = '';
 
       const list = maryData.salud.filter(x => x.date >= from && x.date <= to).sort((a,b)=>b.date.localeCompare(a.date));
       if (list.length === 0) {
@@ -975,7 +1055,12 @@
         return;
       }
 
+      let tAgua = 0, tSueno = 0, tMed = 0, tDulce = 0, tPeriodo = 0;
       list.forEach(sItem => {
+        tAgua += sItem.agua; tSueno += sItem.sueno; tMed += sItem.med;
+        if (sItem.dulce) tDulce++;
+        if (sItem.periodo) tPeriodo++;
+
         container.innerHTML += `
           <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
             <div>
@@ -988,6 +1073,18 @@
             </div>
           </div>`;
       });
+
+      totalsCard.innerHTML = `
+        <div class="glass-card-solid p-4 rounded-2xl mb-4 flex flex-wrap justify-between items-center text-xs bg-blue-50/50">
+          <strong class="font-black text-stone-800">📊 TOTALES DE BIENESTAR EN EL RANGO:</strong>
+          <div class="flex gap-4 font-bold text-stone-700">
+            <span>💧 Agua total: ${tAgua.toFixed(1)} L</span>
+            <span>😴 Sueño prom: ${(tSueno / list.length).toFixed(1)} h</span>
+            <span>🧘 Meditación: ${tMed} min</span>
+            <span>🍫 Días dulce: ${tDulce}</span>
+            <span>🩸 Días periodo: ${tPeriodo}</span>
+          </div>
+        </div>`;
     }
 
     function changeCalendarMonth(dir) {
@@ -1033,14 +1130,13 @@
       }
     }
 
-    // CHECKLIST SEMANAL DE METAS (L-M-X-J-V-S-D)
     function renderCustomGoalsProgress() {
       const container = document.getElementById('custom-goals-container');
       if (!container) return;
       container.innerHTML = '';
 
       if (!maryData.customGoals || maryData.customGoals.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No hay metas creadas aún. Añade una arriba.</p>`;
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No hay metas creadas aún.</p>`;
         return;
       }
 
@@ -1053,7 +1149,7 @@
         const mm = String(d.getMonth() + 1).padStart(2, '0');
         const dd = String(d.getDate()).padStart(2, '0');
         const dateStr = `${yyyy}-${mm}-${dd}`;
-        const dayIdx = (d.getDay() + 6) % 7; // Lunes = 0
+        const dayIdx = (d.getDay() + 6) % 7;
         const dayName = ['L', 'M', 'X', 'J', 'V', 'S', 'D'][dayIdx];
         weekDays.push({ dateStr, dayName, rawDay: dayIdx });
       }
@@ -1070,7 +1166,7 @@
 
           let fulfilled = false;
           if (g.metricType === 'prot') fulfilled = (dayAl.prot >= g.targetValue);
-          else if (g.metricType === 'cal') fulfilled = (dayAl.cal >= g.targetValue * 0.9);
+          else if (g.metricType === 'cal') fulfilled = (dayAl.cal >= g.targetValue);
           else if (g.metricType === 'cardio_min') fulfilled = (totalCMin >= g.targetValue);
           else if (g.metricType === 'agua') fulfilled = (daySalud.agua >= g.targetValue);
           else if (g.metricType === 'entreno') fulfilled = (dayEntrenos.length > 0);
@@ -1098,7 +1194,6 @@
       });
     }
 
-    // RESUMEN CON RANGO Y DETALLE
     function renderResumenRange() {
       const from = document.getElementById('res-from').value;
       const to = document.getElementById('res-to').value;
@@ -1146,7 +1241,7 @@
       }
 
       allDates.forEach(d => {
-        const al = fAl.find(x => x.date === d);
+        const alList = fAl.filter(x => x.date === d);
         const cardios = fCardio.filter(x => x.date === d);
         const entrenos = fEntreno.filter(x => x.date === d);
         const salud = fSalud.find(x => x.date === d);
@@ -1154,7 +1249,9 @@
         let html = `<div class="glass-card p-4 rounded-2xl space-y-2 text-xs">
           <strong class="text-sm font-black text-stone-800 block pb-1 border-b border-[#c8e3dc]">📅 Fecha: ${d}</strong>`;
 
-        if (al) html += `<p>🥗 <strong>Alimentación (${al.nombre || 'Comida'}):</strong> ${al.cal} kcal | Prot: ${al.prot}g | Grasa: ${al.fat}g | Carb: ${al.carb}g</p>`;
+        alList.forEach(al => {
+          html += `<p>🥗 <strong>Alimentación (${al.nombre || 'Comida'}):</strong> ${al.cal} kcal | Prot: ${al.prot}g | Carb: ${al.carb}g | Grasa: ${al.fat}g</p>`;
+        });
         cardios.forEach(c => {
           html += `<p>🏃‍♀️ <strong>Cardio [${c.lugar}]:</strong> ${c.min} min | ${c.km} km | ${c.cal} kcal | HR: ${c.hr} lpm | Ritmo: ${c.ritmo}</p>`;
         });
@@ -1183,8 +1280,9 @@
 
       allDates.forEach(d => {
         report += `📅 *${d}*\n`;
-        const al = fAl.find(x => x.date === d);
-        if (al) report += `🥗 ${al.nombre || 'Comida'}: ${al.cal} kcal | P:${al.prot}g G:${al.fat}g C:${al.carb}g\n`;
+        fAl.filter(x => x.date === d).forEach(al => {
+          report += `🥗 ${al.nombre || 'Comida'}: ${al.cal} kcal | P:${al.prot}g C:${al.carb}g G:${al.fat}g\n`;
+        });
         
         fCardio.filter(x => x.date === d).forEach(c => {
           report += `🏃‍♀️ Cardio (${c.lugar}): ${c.min}m | ${c.km}km | ${c.cal}kcal | Ritmo: ${c.ritmo}\n`;
@@ -1193,7 +1291,7 @@
         fEntreno.filter(x => x.date === d).forEach(e => {
           report += `💪 Entreno (${e.rutina}): ${e.tiempo}m | ${e.cal}kcal | RPE: ${e.esfuerzo}/10\n`;
           (e.ejercicios || []).forEach(ej => {
-            let sTxt = ej.series.map((s,i) => `S${i+1}: ${s.peso}${s.unidad}x${s.reps}`).join(', ');
+            let sTxt = ej.series.map((s,i) => `S${i+1}: ${s.peso}${s.unidad}x${s.reps}${s.pr?' 👑':''}`).join(', ');
             report += `   ▪️ ${ej.nombre}: ${sTxt}\n`;
           });
         });
