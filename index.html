@@ -505,7 +505,7 @@
       isCloudReady = true;
     } catch (e) { console.warn("Firebase:", e); }
 
-    const STORAGE_KEY = 'MARY_FITNESS_DATA_V7';
+    const STORAGE_KEY = 'MARY_FITNESS_DATA_V7_FIX';
 
     let maryData = {
       metas: { calMin: 1600, calMax: 1700, protMin: 120, protMax: 140, fat: 65, carb: 200, cardio: 30, agua: 2.0 },
@@ -926,7 +926,7 @@
       const metas = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 120 };
 
       if (list.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación en este rango.</p>";
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación en este rango.</p>`;
         return;
       }
 
