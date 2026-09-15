@@ -8,7 +8,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -40,7 +39,6 @@
     ::-webkit-scrollbar-track { background: #e2ede7; }
     ::-webkit-scrollbar-thumb { background: #8fbdb3; border-radius: 999px; }
 
-    /* Efecto Glassmorphism Suave y Luminoso */
     .glass-card {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(16px);
@@ -68,7 +66,7 @@
     }
 
     .modal-overlay {
-      background-color: rgba(44, 62, 53, 0.5);
+      background-color: rgba(44, 62, 53, 0.55);
       backdrop-filter: blur(6px);
       z-index: 99999 !important;
     }
@@ -78,7 +76,6 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-[#a4dbd0] selection:text-[#2c3e35]">
 
-  <!-- HEADER -->
   <header class="glass-card-solid sticky top-0 z-40 border-b border-[#c8e3dc]">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
@@ -104,134 +101,234 @@
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
 
-    <!-- SELECTOR DE FECHA GLOBAL -->
     <div class="glass-card rounded-3xl p-4 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
         <span class="text-xs font-black uppercase text-stone-700 tracking-wider">📅 Día Seleccionado:</span>
         <input type="date" id="global-date" onchange="handleGlobalDateChange(this.value)" class="bg-white border border-[#c8e3dc] rounded-xl px-3 py-1.5 text-xs font-black text-stone-800 focus:outline-none">
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="openModalRegistroRapido()" class="px-4 py-2 bg-[#5fa89b] hover:bg-[#4a8c80] text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer">+ Registrar Jornada de Hoy</button>
-      </div>
+      <button onclick="openModalMetas()" class="px-4 py-2 bg-[#b492cd] hover:opacity-90 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer">⚙️ Configurar Metas Base</button>
     </div>
 
-    <!-- PESTAÑA 1: RESUMEN -->
     <section id="pane-resumen" class="tab-pane space-y-6">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
           <div>
-            <h3 class="text-base font-black text-stone-800">🎯 Estado de Metas & Progreso Semanal</h3>
-            <p class="text-xs text-stone-500">Resumen general listo para compartir y revisar</p>
+            <h3 class="text-base font-black text-stone-800">🎯 Estado de Metas & Evaluación Diaria</h3>
+            <p class="text-xs text-stone-500">¿Cumpliste los objetivos de hoy?</p>
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="resumen-kpis">
-          <div class="glass-card p-4 rounded-2xl space-y-2">
-            <span class="text-[10px] font-extrabold text-stone-500 uppercase">Calorías Promedio</span>
-            <p class="text-xl font-black text-stone-800" id="kpi-cal">0 kcal</p>
-          </div>
-          <div class="glass-card p-4 rounded-2xl space-y-2">
-            <span class="text-[10px] font-extrabold text-stone-500 uppercase">Entrenamientos de Fuerza</span>
-            <p class="text-xl font-black text-[#5fa89b]" id="kpi-strength">0 sesiones</p>
-          </div>
-          <div class="glass-card p-4 rounded-2xl space-y-2">
-            <span class="text-[10px] font-extrabold text-stone-500 uppercase">Cardio / Zona 2</span>
-            <p class="text-xl font-black text-[#b492cd]" id="kpi-cardio">0 min</p>
-          </div>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="resumen-kpis"></div>
       </div>
     </section>
 
-    <!-- PESTAÑA 2: ALIMENTACIÓN -->
     <section id="pane-alimentacion" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">🥗 Control de Alimentación & Macros</h3>
-            <p class="text-xs text-stone-500">Ingreso diario de calorías, proteínas, grasas y carbohidratos</p>
+            <p class="text-xs text-stone-500">Calorías, proteínas, grasas y carbohidratos</p>
           </div>
           <button onclick="openModalAlimentacion()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Alimentos del Día</button>
         </div>
-        <div id="alimentacion-content" class="space-y-4">
-          <p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación para esta fecha.</p>
-        </div>
+        <div id="alimentacion-content" class="space-y-4"></div>
       </div>
     </section>
 
-    <!-- PESTAÑA 3: CARDIO -->
     <section id="pane-cardio" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#c8e3dc]">
           <div>
-            <h3 class="text-base font-black text-stone-800">🏃‍♀️ Cardio & Running (Treadmill / Aire Libre)</h3>
-            <p class="text-xs text-stone-500">Duración, distancia, calorías activas y ritmo promedio</p>
+            <h3 class="text-base font-black text-stone-800">🏃‍♀️ Cardio & Running (Treadmill / Outdoor)</h3>
+            <p class="text-xs text-stone-500">Duración, distancia, calorías y frecuencia cardíaca</p>
           </div>
           <button onclick="openModalCardio()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Sesión de Cardio</button>
         </div>
-        <div id="cardio-content" class="space-y-4">
-          <p class="text-xs text-stone-400 text-center py-6">Sin registros de cardio en esta fecha.</p>
-        </div>
+        <div id="cardio-content" class="space-y-4"></div>
       </div>
     </section>
 
-    <!-- PESTAÑA 4: ENTRENAMIENTO -->
     <section id="pane-entrenamiento" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#c8e3dc]">
           <div>
-            <h3 class="text-base font-black text-stone-800">💪 Rutinas de Fuerza (Estilo Hevy)</h3>
-            <p class="text-xs text-stone-500">Torso, Pierna y control de series, repeticiones y pesos (Lbs/Kg)</p>
+            <h3 class="text-base font-black text-stone-800">💪 Registro de Entreno (Estilo Hevy)</h3>
+            <p class="text-xs text-stone-500">Selecciona tu rutina, edita series, repeticiones y peso (Lbs / Kg)</p>
           </div>
-          <button onclick="openModalRutina()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Iniciar / Crear Rutina</button>
+          <button onclick="openModalRutina()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Iniciar Nueva Rutina</button>
         </div>
-        <div id="entrenamiento-content" class="space-y-4">
-          <p class="text-xs text-stone-400 text-center py-6">No hay entrenamientos de fuerza registrados hoy.</p>
-        </div>
+        <div id="entrenamiento-content" class="space-y-4"></div>
       </div>
     </section>
 
-    <!-- PESTAÑA 5: CALENDARIO -->
     <section id="pane-calendario" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
         <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
           <div>
-            <h3 class="text-base font-black text-stone-800">🗓️ Calendario de Actividad</h3>
-            <p class="text-xs text-stone-500">Visualiza qué días hiciste cardio, fuerza o descanso codificado por color</p>
+            <h3 class="text-base font-black text-stone-800">🗓️ Calendario de Actividad a Color</h3>
+            <p class="text-xs text-stone-500">Visualiza qué días entrenaste fuerza (Verde), cardio (Lila) o descanso</p>
           </div>
         </div>
-        <div id="calendar-view" class="py-4 text-center text-xs text-stone-500">
-          Vista de calendario interactivo en desarrollo para la siguiente actualización.
-        </div>
+        <div id="calendar-view" class="grid grid-cols-7 gap-2 py-4"></div>
       </div>
     </section>
 
-    <!-- PESTAÑA 6: SALUD Y BIENESTAR -->
     <section id="pane-salud" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-[#c8e3dc]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#c8e3dc]">
           <div>
-            <h3 class="text-base font-black text-stone-800">💧 Salud & Bienestar</h3>
+            <h3 class="text-base font-black text-stone-800">💧 Salud & Bienestar Diario</h3>
             <p class="text-xs text-stone-500">Agua, sueño, meditación y control de dulces</p>
           </div>
-          <button onclick="openModalSalud()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Bienestar Diario</button>
+          <button onclick="openModalSalud()" class="px-4 py-2 bg-[#5fa89b] text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">+ Registrar Bienestar</button>
         </div>
-        <div id="salud-content" class="space-y-4">
-          <p class="text-xs text-stone-400 text-center py-6">Sin registros de bienestar en esta fecha.</p>
-        </div>
+        <div id="salud-content" class="space-y-4"></div>
       </div>
     </section>
 
   </main>
 
-  <!-- TOAST -->
+  <div id="modal-metas" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
+      <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
+        <h3 class="text-base font-black text-stone-800">⚙️ Configurar Metas Base</h3>
+        <button onclick="closeModal('modal-metas')" class="text-stone-400 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-stone-600 block mb-1">Meta Calorías (kcal)</label><input type="number" id="meta-cal" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Prot (g)</label><input type="number" id="meta-prot" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Grasa (g)</label><input type="number" id="meta-fat" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Carb (g)</label><input type="number" id="meta-carb" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Cardio Mín (min)</label><input type="number" id="meta-cardio" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Agua Mín (L)</label><input type="number" step="0.1" id="meta-agua" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-metas')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
+        <button onclick="saveMetas()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">Guardar Metas</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-alimentacion" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
+      <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
+        <h3 class="text-base font-black text-stone-800">🥗 Registrar Alimentación</h3>
+        <button onclick="closeModal('modal-alimentacion')" class="text-stone-400 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-stone-600 block mb-1">Calorías (kcal)</label><input type="number" id="alimentacion-cal" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Prot (g)</label><input type="number" id="alimentacion-prot" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Grasa (g)</label><input type="number" id="alimentacion-fat" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Carb (g)</label><input type="number" id="alimentacion-carb" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-stone-800"></div>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-alimentacion')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
+        <button onclick="saveAlimentacion()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-cardio" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
+      <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
+        <h3 class="text-base font-black text-stone-800">🏃‍♀️ Registrar Cardio</h3>
+        <button onclick="closeModal('modal-cardio')" class="text-stone-400 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Duración (min)</label><input type="number" id="cardio-min" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Distancia (km)</label><input type="number" step="0.01" id="cardio-km" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Calorías Activas</label><input type="number" id="cardio-cal" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Frec. Cardíaca (lpm)</label><input type="number" id="cardio-hr" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-cardio')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
+        <button onclick="saveCardio()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-entrenamiento" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-md w-full p-6 space-y-4 border border-[#c8e3dc] max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
+        <h3 class="text-base font-black text-stone-800">💪 Entreno (Estilo Hevy)</h3>
+        <button onclick="closeModal('modal-entrenamiento')" class="text-stone-400 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-stone-600 block mb-1">Rutina</label>
+            <select id="entreno-rutina" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800">
+              <option value="Torso A">Torso A</option>
+              <option value="Pierna A">Pierna A</option>
+              <option value="Torso B">Torso B</option>
+              <option value="Pierna B">Pierna B</option>
+              <option value="Full Body">Full Body</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-stone-600 block mb-1">Unidad de Peso</label>
+            <select id="entreno-unidad" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800">
+              <option value="lbs">Lbs (Libras)</option>
+              <option value="kg">Kg (Kilos)</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Tiempo Total (min)</label><input type="number" id="entreno-tiempo" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Volumen Total Calculado</label><input type="number" id="entreno-vol" placeholder="Ej. 3500" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        </div>
+        <div>
+          <label class="font-bold text-stone-600 block mb-1">Notas / Ejercicios Realizados</label>
+          <textarea id="entreno-notas" rows="3" placeholder="Ej. Press de Banca 3x8 (40kg), Remo 3x10..." class="w-full bg-white border border-[#c8e3dc] rounded-xl p-2 font-medium text-stone-800"></textarea>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-entrenamiento')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
+        <button onclick="saveEntrenamiento()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">Guardar Rutina</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-salud" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
+      <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
+        <h3 class="text-base font-black text-stone-800">💧 Salud & Bienestar</h3>
+        <button onclick="closeModal('modal-salud')" class="text-stone-400 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-stone-600 block mb-1">Agua (litros)</label><input type="number" step="0.1" id="salud-agua" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+          <div><label class="font-bold text-stone-600 block mb-1">Sueño (horas)</label><input type="number" step="0.5" id="salud-sueno" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        </div>
+        <div><label class="font-bold text-stone-600 block mb-1">Meditación (minutos)</label><input type="number" id="salud-med" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <label class="flex items-center space-x-2 cursor-pointer pt-1">
+          <input type="checkbox" id="salud-dulce" class="accent-[#5fa89b] w-4 h-4 rounded">
+          <span class="font-bold text-stone-700">¿Comí dulce hoy?</span>
+        </label>
+      </div>
+      <div class="pt-2 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-salud')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
+        <button onclick="saveSalud()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="fixed bottom-5 right-5 z-50 bg-[#2c3e35] text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none border border-white/20">
     <span>✨</span>
     <span id="toast-text">Acción completada</span>
   </div>
 
-  <!-- SCRIPT -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCnhvfyXpwJdYOQFCvsyHDhgw9F3X7ARR4",
@@ -251,9 +348,10 @@
       isCloudReady = true;
     } catch (e) { console.warn("Firebase:", e); }
 
-    const STORAGE_KEY = 'MARY_FITNESS_DATA_V1';
+    const STORAGE_KEY = 'MARY_FITNESS_DATA_V3';
 
     let maryData = {
+      metas: { cal: 2000, prot: 130, fat: 65, carb: 200, cardio: 30, agua: 2.0 },
       alimentacion: [],
       cardio: [],
       entrenamiento: [],
@@ -316,6 +414,9 @@
       setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2500);
     }
 
+    function openModal(id) { const m = document.getElementById(id); if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; } }
+    function closeModal(id) { const m = document.getElementById(id); if (m) { m.classList.add('hidden'); m.style.display = 'none'; } }
+
     function switchTab(tabId) {
       ['resumen', 'alimentacion', 'cardio', 'entrenamiento', 'calendario', 'salud'].forEach(id => {
         const pane = document.getElementById(`pane-${id}`);
@@ -331,16 +432,252 @@
       renderAllViews();
     }
 
-    function renderAllViews() {
-      // Renderizados dinámicos según fecha seleccionada
+    // MODAL METAS
+    function openModalMetas() {
+      const m = maryData.metas || { cal: 2000, prot: 130, fat: 65, carb: 200, cardio: 30, agua: 2.0 };
+      document.getElementById('meta-cal').value = m.cal;
+      document.getElementById('meta-prot').value = m.prot;
+      document.getElementById('meta-fat').value = m.fat;
+      document.getElementById('meta-carb').value = m.carb;
+      document.getElementById('meta-cardio').value = m.cardio;
+      document.getElementById('meta-agua').value = m.agua;
+      openModal('modal-metas');
     }
 
-    // Funciones placeholders para modales rápidos
-    function openModalAlimentacion() { showToast('Módulo de alimentación listo para programar'); }
-    function openModalCardio() { showToast('Módulo de cardio listo para programar'); }
-    function openModalRutina() { showToast('Módulo de fuerza estilo Hevy listo para programar'); }
-    function openModalSalud() { showToast('Módulo de bienestar listo para programar'); }
-    function openModalRegistroRapido() { showToast('Panel general listo'); }
+    function saveMetas() {
+      maryData.metas = {
+        cal: parseFloat(document.getElementById('meta-cal').value || 2000),
+        prot: parseFloat(document.getElementById('meta-prot').value || 130),
+        fat: parseFloat(document.getElementById('meta-fat').value || 65),
+        carb: parseFloat(document.getElementById('meta-carb').value || 200),
+        cardio: parseFloat(document.getElementById('meta-cardio').value || 30),
+        agua: parseFloat(document.getElementById('meta-agua').value || 2.0)
+      };
+      saveDatabase(); closeModal('modal-metas'); renderAllViews(); showToast('Metas base actualizadas');
+    }
+
+    // MODAL TRIGGERS
+    function openModalAlimentacion() {
+      const existing = maryData.alimentacion.find(x => x.date === currentDate) || {};
+      document.getElementById('alimentacion-cal').value = existing.cal || '';
+      document.getElementById('alimentacion-prot').value = existing.prot || '';
+      document.getElementById('alimentacion-fat').value = existing.fat || '';
+      document.getElementById('alimentacion-carb').value = existing.carb || '';
+      openModal('modal-alimentacion');
+    }
+
+    function openModalCardio() {
+      document.getElementById('cardio-min').value = '';
+      document.getElementById('cardio-km').value = '';
+      document.getElementById('cardio-cal').value = '';
+      document.getElementById('cardio-hr').value = '';
+      openModal('modal-cardio');
+    }
+
+    function openModalRutina() {
+      document.getElementById('entreno-tiempo').value = '';
+      document.getElementById('entreno-vol').value = '';
+      document.getElementById('entreno-notas').value = '';
+      openModal('modal-entrenamiento');
+    }
+
+    function openModalSalud() {
+      const existing = maryData.salud.find(x => x.date === currentDate) || {};
+      document.getElementById('salud-agua').value = existing.agua || '';
+      document.getElementById('salud-sueno').value = existing.sueno || '';
+      document.getElementById('salud-med').value = existing.med || '';
+      document.getElementById('salud-dulce').checked = !!existing.dulce;
+      openModal('modal-salud');
+    }
+
+    // SAVE FUNCTIONS
+    function saveAlimentacion() {
+      const item = {
+        id: Date.now(),
+        date: currentDate,
+        cal: parseFloat(document.getElementById('alimentacion-cal').value || 0),
+        prot: parseFloat(document.getElementById('alimentacion-prot').value || 0),
+        fat: parseFloat(document.getElementById('alimentacion-fat').value || 0),
+        carb: parseFloat(document.getElementById('alimentacion-carb').value || 0)
+      };
+      maryData.alimentacion = maryData.alimentacion.filter(x => x.date !== currentDate);
+      maryData.alimentacion.push(item);
+      saveDatabase(); closeModal('modal-alimentacion'); renderAllViews(); showToast('Alimentación guardada');
+    }
+
+    function saveCardio() {
+      const item = {
+        id: Date.now(),
+        date: currentDate,
+        min: parseFloat(document.getElementById('cardio-min').value || 0),
+        km: parseFloat(document.getElementById('cardio-km').value || 0),
+        cal: parseFloat(document.getElementById('cardio-cal').value || 0),
+        hr: parseFloat(document.getElementById('cardio-hr').value || 0)
+      };
+      maryData.cardio.push(item);
+      saveDatabase(); closeModal('modal-cardio'); renderAllViews(); showToast('Cardio guardado');
+    }
+
+    function saveEntrenamiento() {
+      const item = {
+        id: Date.now(),
+        date: currentDate,
+        rutina: document.getElementById('entreno-rutina').value,
+        unidad: document.getElementById('entreno-unidad').value,
+        tiempo: parseFloat(document.getElementById('entreno-tiempo').value || 0),
+        volumen: parseFloat(document.getElementById('entreno-vol').value || 0),
+        notas: document.getElementById('entreno-notas').value
+      };
+      maryData.entrenamiento.push(item);
+      saveDatabase(); closeModal('modal-entrenamiento'); renderAllViews(); showToast('Rutina guardada');
+    }
+
+    function saveSalud() {
+      const item = {
+        id: Date.now(),
+        date: currentDate,
+        agua: parseFloat(document.getElementById('salud-agua').value || 0),
+        sueno: parseFloat(document.getElementById('salud-sueno').value || 0),
+        med: parseFloat(document.getElementById('salud-med').value || 0),
+        dulce: document.getElementById('salud-dulce').checked
+      };
+      maryData.salud = maryData.salud.filter(x => x.date !== currentDate);
+      maryData.salud.push(item);
+      saveDatabase(); closeModal('modal-salud'); renderAllViews(); showToast('Bienestar guardado');
+    }
+
+    function deleteItem(type, id) {
+      maryData[type] = maryData[type].filter(x => x.id !== id);
+      saveDatabase(); renderAllViews(); showToast('Registro eliminado');
+    }
+
+    // RENDER VIEWS
+    function renderAllViews() {
+      const metas = maryData.metas || { cal: 2000, prot: 130, fat: 65, carb: 200, cardio: 30, agua: 2.0 };
+      const alItem = maryData.alimentacion.find(x => x.date === currentDate) || { cal: 0, prot: 0, fat: 0, carb: 0 };
+      const cardios = maryData.cardio.filter(x => x.date === currentDate);
+      const totalCardioMin = cardios.reduce((acc, x) => acc + x.min, 0);
+      const entrenos = maryData.entrenamiento.filter(x => x.date === currentDate);
+      const saludItem = maryData.salud.find(x => x.date === currentDate) || { agua: 0 };
+
+      // 1. Resumen KPIs & Pass/Fail
+      const kpis = document.getElementById('resumen-kpis');
+      kpis.innerHTML = `
+        <div class="glass-card p-4 rounded-2xl space-y-1">
+          <span class="text-[10px] font-extrabold text-stone-500 uppercase">Calorías (${alItem.cal} / ${metas.cal})</span>
+          <p class="text-lg font-black ${alItem.cal >= metas.cal * 0.9 ? 'text-emerald-600' : 'text-stone-800'}">${alItem.cal >= metas.cal * 0.9 ? '✅ Cumplido' : '⚠️ En proceso'}</p>
+        </div>
+        <div class="glass-card p-4 rounded-2xl space-y-1">
+          <span class="text-[10px] font-extrabold text-stone-500 uppercase">Proteína (${alItem.prot}g / ${metas.prot}g)</span>
+          <p class="text-lg font-black ${alItem.prot >= metas.prot ? 'text-emerald-600' : 'text-stone-800'}">${alItem.prot >= metas.prot ? '✅ Cumplido' : '⚠️ En proceso'}</p>
+        </div>
+        <div class="glass-card p-4 rounded-2xl space-y-1">
+          <span class="text-[10px] font-extrabold text-stone-500 uppercase">Cardio (${totalCardioMin}m / ${metas.cardio}m)</span>
+          <p class="text-lg font-black ${totalCardioMin >= metas.cardio ? 'text-emerald-600' : 'text-stone-800'}">${totalCardioMin >= metas.cardio ? '✅ Cumplido' : '⚠️ En proceso'}</p>
+        </div>
+        <div class="glass-card p-4 rounded-2xl space-y-1">
+          <span class="text-[10px] font-extrabold text-stone-500 uppercase">Fuerza (${entrenos.length} sesiones)</span>
+          <p class="text-lg font-black ${entrenos.length > 0 ? 'text-emerald-600' : 'text-stone-800'}">${entrenos.length > 0 ? '✅ Entrenado' : '💤 Descanso'}</p>
+        </div>
+      `;
+
+      // 2. Alimentación View
+      const alContainer = document.getElementById('alimentacion-content');
+      alContainer.innerHTML = '';
+      if (!maryData.alimentacion.some(x => x.date === currentDate)) {
+        alContainer.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación para ${currentDate}.</p>`;
+      } else {
+        alContainer.innerHTML = `
+          <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
+            <div>
+              <strong class="text-sm font-black text-stone-800">🥗 ${alItem.date}</strong>
+              <p class="text-stone-600 mt-1">🔥 Calorías: <strong>${alItem.cal} kcal</strong> (Meta: ${metas.cal}) | 🥩 Proteína: <strong>${alItem.prot}g</strong> | 🥑 Grasa: <strong>${alItem.fat}g</strong> | 🍚 Carbs: <strong>${alItem.carb}g</strong></p>
+            </div>
+            <button onclick="deleteItem('alimentacion', ${alItem.id})" class="text-red-500 font-bold px-2">✕</button>
+          </div>`;
+      }
+
+      // 3. Cardio View
+      const cardioContainer = document.getElementById('cardio-content');
+      cardioContainer.innerHTML = '';
+      if (cardios.length === 0) {
+        cardioContainer.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">Sin registros de cardio en esta fecha.</p>`;
+      } else {
+        cardios.forEach(c => {
+          cardioContainer.innerHTML += `
+            <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
+              <div>
+                <strong class="text-sm font-black text-stone-800">🏃‍♀️ ${c.date}</strong>
+                <p class="text-stone-600 mt-1">⏱️ Duración: <strong>${c.min} min</strong> | 📍 Distancia: <strong>${c.km} km</strong> | 🔥 Calorías: <strong>${c.cal} kcal</strong> | 🫀 HR: <strong>${c.hr} lpm</strong></p>
+              </div>
+              <button onclick="deleteItem('cardio', ${c.id})" class="text-red-500 font-bold px-2">✕</button>
+            </div>`;
+        });
+      }
+
+      // 4. Entreno View
+      const entrenoContainer = document.getElementById('entrenamiento-content');
+      entrenoContainer.innerHTML = '';
+      if (entrenos.length === 0) {
+        entrenoContainer.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay rutinas registradas hoy.</p>`;
+      } else {
+        entrenos.forEach(e => {
+          entrenoContainer.innerHTML += `
+            <div class="glass-card p-4 rounded-2xl space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <strong class="text-sm font-black text-stone-800">💪 Rutina: ${e.rutina}</strong>
+                <button onclick="deleteItem('entrenamiento', ${e.id})" class="text-red-500 font-bold px-2">✕</button>
+              </div>
+              <p class="text-stone-600">⏱️ Tiempo: <strong>${e.tiempo} min</strong> | 🏋️ Volumen Total: <strong>${e.volumen} ${e.unidad}</strong></p>
+              <p class="text-stone-500 italic">📝 Notas: ${e.notas || 'Ninguna'}</p>
+            </div>`;
+        });
+      }
+
+      // 5. Salud View
+      const saludContainer = document.getElementById('salud-content');
+      saludContainer.innerHTML = '';
+      const sItem = maryData.salud.find(x => x.date === currentDate);
+      if (!sItem) {
+        saludContainer.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">Sin registros de bienestar en esta fecha.</p>`;
+      } else {
+        saludContainer.innerHTML = `
+          <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
+            <div>
+              <strong class="text-sm font-black text-stone-800">💧 ${sItem.date}</strong>
+              <p class="text-stone-600 mt-1">💧 Agua: <strong>${sItem.agua} L</strong> | 😴 Sueño: <strong>${sItem.sueno} h</strong> | 🧘 Meditación: <strong>${sItem.med} min</strong> | 🍫 ¿Comió dulce?: <strong>${sItem.dulce ? 'Sí 🍬' : 'No 🌟'}</strong></p>
+            </div>
+            <button onclick="deleteItem('salud', ${sItem.id})" class="text-red-500 font-bold px-2">✕</button>
+          </div>`;
+      }
+
+      // 6. Calendario Visual
+      const calView = document.getElementById('calendar-view');
+      calView.innerHTML = '';
+      const curr = new Date(currentDate + 'T00:00:00');
+      const year = curr.getFullYear();
+      const month = curr.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      ['L', 'M', 'X', 'J', 'V', 'S', 'D'].forEach(d => {
+        calView.innerHTML += `<div class="text-center font-black text-[10px] text-stone-400">${d}</div>`;
+      });
+
+      for (let i = 1; i <= daysInMonth; i++) {
+        const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const hasEntreno = maryData.entrenamiento.some(x => x.date === dStr);
+        const hasCardio = maryData.cardio.some(x => x.date === dStr);
+
+        let bgClass = 'bg-white/60 text-stone-600';
+        if (hasEntreno) bgClass = 'bg-emerald-500/30 border border-emerald-500 text-emerald-800 font-black';
+        else if (hasCardio) bgClass = 'bg-[#b492cd]/30 border border-[#b492cd] text-[#633a82] font-black';
+
+        calView.innerHTML += `
+          <div onclick="handleGlobalDateChange('${dStr}'); document.getElementById('global-date').value='${dStr}';" class="h-10 rounded-xl flex items-center justify-center text-xs cursor-pointer transition hover:scale-105 ${bgClass}" title="${dStr}">
+            ${i}
+          </div>`;
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', initApp);
   </script>
