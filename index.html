@@ -64,7 +64,6 @@
         </div>
       </div>
 
-      <!-- NAVEGACIÓN PRINCIPAL -->
       <nav class="flex items-center gap-1.5 bg-[#f7f0f4] p-1 rounded-2xl border border-[#ebd7e3] overflow-x-auto max-w-full">
         <button onclick="switchTab('resumen')" id="btn-resumen" class="nav-tab active px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600 whitespace-nowrap">📊 Resumen</button>
         <button onclick="switchTab('alimentacion')" id="btn-alimentacion" class="nav-tab px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600 whitespace-nowrap">🥗 Alimentación</button>
@@ -84,30 +83,24 @@
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 space-y-6">
 
-    <!-- 1. VISTA RESUMEN -->
+    <!-- 1. RESUMEN -->
     <section id="view-resumen" class="space-y-6">
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-sm font-black uppercase tracking-wider text-stone-800">📌 Metas & Habit Tracker Semanal</h2>
-          <p class="text-xs text-stone-500">Progreso limpio de tu semana en curso</p>
-        </div>
-        <button onclick="openNewGoalModal()" class="px-3 py-1.5 bg-[#b492cd] text-white rounded-xl text-xs font-black shadow-xs cursor-pointer">+ Nueva Meta</button>
-      </div>
-
-      <div id="goals-container" class="space-y-3"></div>
-
       <div class="glass-card rounded-3xl p-5 space-y-3">
-        <h3 class="text-xs font-black uppercase tracking-wider text-stone-700 border-b border-[#ebd7e3] pb-2">📋 Detalle de Registros del Día</h3>
-        <div id="day-summary-details" class="space-y-2 text-xs"></div>
+        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800 border-b border-[#ebd7e3] pb-2">📌 Resumen General</h3>
+        <div id="resumen-stats" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+      </div>
+      <div class="glass-card rounded-3xl p-5 space-y-3">
+        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800 border-b border-[#ebd7e3] pb-2">🎯 Metas & Hábitos</h3>
+        <div id="resumen-goals" class="space-y-2 text-xs"></div>
       </div>
     </section>
 
-    <!-- 2. VISTA ALIMENTACIÓN -->
+    <!-- 2. ALIMENTACIÓN -->
     <section id="view-alimentacion" class="space-y-6 hidden">
       <div class="glass-card rounded-3xl p-5 space-y-4">
-        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🥗 Registro de Comidas</h3>
+        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🥗 Control de Alimentación & Macros</h3>
         <div class="grid grid-cols-1 sm:grid-cols-6 gap-2 text-xs">
-          <input type="text" id="food-name" placeholder="Alimento (ej. Espagueti)" class="sm:col-span-2 bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+          <input type="text" id="food-name" placeholder="Alimento..." class="sm:col-span-2 bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
           <input type="number" id="food-cal" placeholder="Calorías (kcal)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
           <input type="number" id="food-prot" placeholder="Proteína (g)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
           <input type="number" id="food-carb" placeholder="Carbs (g)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
@@ -115,154 +108,74 @@
         </div>
         <button onclick="addFoodItem()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">+ Registrar Alimento</button>
       </div>
-
       <div class="glass-card rounded-3xl p-4 space-y-3">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-black uppercase tracking-wider text-stone-700">🔍 Buscar en Alimentación</h3>
-          <input type="text" id="food-search" oninput="renderFoodLogs()" placeholder="Busca un alimento..." class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-1.5 text-xs font-bold outline-none w-60">
-        </div>
+        <input type="text" id="food-search" oninput="renderFoodLogs()" placeholder="🔍 Buscar alimento..." class="w-full bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 text-xs font-bold outline-none">
         <div id="food-logs-container" class="space-y-2"></div>
       </div>
     </section>
 
-    <!-- 3. VISTA CARDIO -->
+    <!-- 3. CARDIO -->
     <section id="view-cardio" class="space-y-6 hidden">
       <div class="glass-card rounded-3xl p-5 space-y-4">
-        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🏃‍♀️ Registrar Sesión de Cardio</h3>
+        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🏃‍♀️ Registro de Cardio & Running</h3>
         <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 text-xs">
-          <select id="cardio-type" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-            <option value="Zona 2 (Suave/Inclinado)">Zona 2 (Suave/Inclinado)</option>
-            <option value="Intenso (HIIT/Running)">Intenso (HIIT/Running)</option>
-          </select>
+          <input type="text" id="cardio-type" placeholder="Tipo (ej. Cinta)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
           <input type="number" id="cardio-min" placeholder="Minutos" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          <input type="number" step="0.1" id="cardio-km" placeholder="Kilómetros (km)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          <input type="number" id="cardio-kcal" placeholder="Calorías (kcal)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+          <input type="number" step="0.1" id="cardio-km" placeholder="Kilómetros" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+          <input type="number" id="cardio-kcal" placeholder="Calorías" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
           <input type="text" id="cardio-pace" placeholder="Ritmo (ej. 11'44'')" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
         </div>
-        <button onclick="addCardioSession()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">+ Registrar Cardio</button>
+        <button onclick="addCardioSession()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">+ Registrar Sesión</button>
       </div>
-
-      <div class="glass-card rounded-3xl p-5 space-y-4">
-        <h3 class="text-xs font-black uppercase tracking-wider text-stone-700">🔎 Filtros & Métricas de Cardio</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div>
-            <label class="font-bold text-stone-500 block mb-1">Filtrar por Tipo</label>
-            <select id="filter-cardio-type" onchange="renderCardioHistory()" class="w-full bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-              <option value="all">Todos los tipos</option>
-              <option value="Zona 2 (Suave/Inclinado)">Zona 2</option>
-              <option value="Intenso (HIIT/Running)">Intenso</option>
-            </select>
-          </div>
-          <div>
-            <label class="font-bold text-stone-500 block mb-1">Desde</label>
-            <input type="date" id="filter-cardio-from" onchange="renderCardioHistory()" class="w-full bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          </div>
-          <div>
-            <label class="font-bold text-stone-500 block mb-1">Hasta</label>
-            <input type="date" id="filter-cardio-to" onchange="renderCardioHistory()" class="w-full bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          </div>
-        </div>
-
-        <div id="cardio-stats-summary" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2"></div>
-        <div id="cardio-history-container" class="space-y-2 pt-2"></div>
-      </div>
+      <div id="cardio-history-container" class="space-y-2"></div>
     </section>
 
-    <!-- 4. VISTA ENTRENO -->
+    <!-- 4. ENTRENO -->
     <section id="view-entreno" class="space-y-6 hidden">
       <div class="glass-card rounded-3xl p-5 space-y-4">
-        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🏋️‍♀️ Registrar Sesión de Fuerza</h3>
+        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🏋️‍♀️ Registro de Fuerza & PRs</h3>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
-          <input type="text" id="workout-name" placeholder="Rutina (ej. Pierna A)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+          <input type="text" id="workout-name" placeholder="Rutina (ej. Pierna B)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
           <input type="number" id="workout-min" placeholder="Minutos" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
           <input type="number" id="workout-kcal" placeholder="Calorías" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          <input type="text" id="workout-exercises" placeholder="Ejercicios (ej. Extensiones, Prensa)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+          <input type="text" id="workout-rpe" placeholder="Esfuerzo RPE (ej. 8/10)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
         </div>
-        <textarea id="workout-notes" placeholder="Notas, RPE, sensaciones..." class="w-full bg-white border border-[#ebd7e3] rounded-xl p-2.5 text-xs font-medium outline-none resize-none" rows="2"></textarea>
+        <textarea id="workout-notes" placeholder="Notas, sensaciones..." class="w-full bg-white border border-[#ebd7e3] rounded-xl p-2.5 text-xs font-medium outline-none" rows="2"></textarea>
         <button onclick="addWorkoutSession()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">+ Guardar Entreno</button>
       </div>
-
-      <div class="glass-card rounded-3xl p-4 space-y-3">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-black uppercase tracking-wider text-stone-700">🔍 Buscador de Ejercicios / Entrenos</h3>
-          <input type="text" id="workout-search" oninput="renderWorkoutLogs()" placeholder="Busca por ejercicio (ej. extensiones)..." class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-1.5 text-xs font-bold outline-none w-64">
-        </div>
-        <div id="workout-logs-container" class="space-y-2"></div>
-      </div>
+      <div id="workout-logs-container" class="space-y-3"></div>
     </section>
 
-    <!-- 5. VISTA CALENDARIO -->
+    <!-- 5. CALENDARIO -->
     <section id="view-calendario" class="space-y-6 hidden">
       <div class="glass-card rounded-3xl p-5 space-y-4">
-        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">📅 Calendario de Actividad</h3>
-        <div class="flex justify-between items-center">
-          <button onclick="changeCalendarMonth(-1)" class="px-3 py-1 bg-white border border-[#ebd7e3] rounded-xl font-bold text-xs cursor-pointer">‹ Mes Anterior</button>
-          <span id="calendar-month-title" class="text-sm font-black text-stone-800">Septiembre 2026</span>
-          <button onclick="changeCalendarMonth(1)" class="px-3 py-1 bg-white border border-[#ebd7e3] rounded-xl font-bold text-xs cursor-pointer">Mes Siguiente ›</button>
-        </div>
+        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">📅 Calendario Histórico de Actividad</h3>
         <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center text-xs"></div>
       </div>
     </section>
 
-    <!-- 6. VISTA BIENESTAR & SALUD -->
+    <!-- 6. BIENESTAR -->
     <section id="view-bienestar" class="space-y-6 hidden">
       <div class="glass-card rounded-3xl p-5 space-y-4">
-        <div class="flex justify-between items-center border-b border-[#ebd7e3] pb-2">
-          <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">⚖️ Control de Peso Corporal</h3>
-          <span id="current-weight-avg" class="text-xs font-black text-[#b492cd]">Promedio semanal: -- kg</span>
+        <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">💖 Salud & Bienestar Diario</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <input type="number" step="0.5" id="b-water" placeholder="Agua (L)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+          <input type="number" step="0.5" id="b-sleep" placeholder="Sueño (hrs)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+          <select id="b-mood" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
+            <option value="Neutral 🧘‍♀️">Ánimo: Neutral</option>
+            <option value="Motivada 🔥">Ánimo: Motivada</option>
+            <option value="Cansada 🥱">Ánimo: Cansada</option>
+          </select>
+          <button onclick="saveWellness()" class="px-4 py-2 bg-[#c879a8] text-white rounded-xl text-xs font-black cursor-pointer">Guardar Bienestar</button>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
-          <input type="date" id="weight-date" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          <input type="number" step="0.1" id="weight-kg" placeholder="Peso en kg" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          <input type="text" id="weight-note" placeholder="Nota (ej. Menstruación, ayuno...)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-medium">
-          <button onclick="saveWeightLog()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">Registrar Peso</button>
-        </div>
-        <div id="weight-history-container" class="space-y-2 pt-2 max-h-48 overflow-y-auto"></div>
-      </div>
-
-      <div class="glass-card rounded-3xl p-5 space-y-4">
-        <div class="flex justify-between items-center border-b border-[#ebd7e3] pb-2">
-          <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🫀 Evolución de VO2 Max</h3>
-          <span id="current-vo2" class="text-xs font-black text-[#5fa89b]">Actual: -- mL/kg/min</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-          <input type="date" id="vo2-date" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          <input type="number" step="0.1" id="vo2-value" placeholder="VO2 Max (ej. 42.5)" class="bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-          <button onclick="saveVo2Log()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">Registrar VO2 Max</button>
-        </div>
-        <div id="vo2-history-container" class="space-y-2 pt-2 max-h-36 overflow-y-auto"></div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="glass-card rounded-3xl p-5 space-y-4">
-          <h3 class="text-xs font-black uppercase tracking-wider text-stone-800 border-b border-[#ebd7e3] pb-2">📏 Medidas Corporales (cm)</h3>
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <input type="date" id="measure-date" class="col-span-2 bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-            <input type="number" step="0.1" id="m-cintura" placeholder="Cintura (cm)" class="bg-white border border-[#ebd7e3] rounded-xl px-2.5 py-1.5 font-bold">
-            <input type="number" step="0.1" id="m-cadera" placeholder="Cadera (cm)" class="bg-white border border-[#ebd7e3] rounded-xl px-2.5 py-1.5 font-bold">
-            <input type="number" step="0.1" id="m-pierna" placeholder="Pierna (cm)" class="bg-white border border-[#ebd7e3] rounded-xl px-2.5 py-1.5 font-bold">
-            <input type="number" step="0.1" id="m-brazo" placeholder="Brazo (cm)" class="bg-white border border-[#ebd7e3] rounded-xl px-2.5 py-1.5 font-bold">
-          </div>
-          <button onclick="saveMeasurements()" class="w-full py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">Guardar Medidas</button>
-          <div id="measurements-history" class="space-y-2 max-h-40 overflow-y-auto pt-2"></div>
-        </div>
-
-        <div class="glass-card rounded-3xl p-5 space-y-4">
-          <h3 class="text-xs font-black uppercase tracking-wider text-stone-800 border-b border-[#ebd7e3] pb-2">📸 Galería de Progreso (Fotos)</h3>
-          <div class="space-y-2 text-xs">
-            <input type="date" id="photo-date" class="w-full bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-            <input type="text" id="photo-url" placeholder="Enlace de imagen o foto (URL)..." class="w-full bg-white border border-[#ebd7e3] rounded-xl px-3 py-2 font-bold">
-            <button onclick="saveProgressPhoto()" class="w-full py-2 bg-[#c879a8] text-white rounded-xl text-xs font-black cursor-pointer">+ Añadir Registro Fotográfico</button>
-          </div>
-          <div id="photo-gallery-container" class="grid grid-cols-3 gap-2 pt-2 max-h-48 overflow-y-auto"></div>
-        </div>
+        <div id="wellness-history" class="space-y-2 pt-2"></div>
       </div>
     </section>
 
   </main>
 
   <div id="toast" class="fixed bottom-5 right-5 z-50 bg-[#3d2c3d] text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-black transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    ✨ ¡Datos recuperados con éxito!
+    ✨ ¡Datos cargados con éxito!
   </div>
 
   <script>
@@ -282,68 +195,30 @@
       db = firebase.firestore();
     } catch(e) {}
 
-    const STORAGE_PREFIX = 'MARY_FITNESS_PRO_';
+    const STORAGE_KEY = 'MARY_FITNESS_DATA_V9';
     let currentDate = new Date().toISOString().slice(0, 10);
-    let calendarCurrentDate = new Date();
 
-    // MOTOR AUTOMÁTICO DE RECUPERACIÓN V9 / V8
-    function loadDayData(date) {
+    function loadData() {
       try {
-        // 1. Revisar si ya existe en Pro
-        let raw = localStorage.getItem(STORAGE_PREFIX + date);
+        const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) return JSON.parse(raw);
-
-        // 2. Buscar en la llave antigua exacta 'MARY_FITNESS_DATA_V9'
-        let oldV9 = localStorage.getItem('MARY_FITNESS_DATA_V9');
-        if (oldV9) {
-          const parsedV9 = JSON.parse(oldV9);
-          if (parsedV9 && (parsedV9.food || parsedV9.cardio || parsedV9.workouts)) {
-            // Migrar automáticamente al formato de hoy para que no se pierda nada
-            localStorage.setItem(STORAGE_PREFIX + date, JSON.stringify(parsedV9));
-            return parsedV9;
-          }
-        }
-
-        // 3. Escaneo general por si acaso
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && k.includes('FITNESS')) {
-            const val = localStorage.getItem(k);
-            if (val && (val.includes('food') || val.includes('Espagueti') || val.includes('Pierna'))) {
-              const parsed = JSON.parse(val);
-              if (parsed && (parsed.food || parsed.cardio || parsed.workouts)) {
-                return parsed;
-              }
-            }
-          }
-        }
       } catch(e) {}
-
-      return { food: [], cardio: [], workouts: [], goalsState: {} };
+      return {
+        food: [],
+        cardio: [],
+        workouts: [],
+        wellness: []
+      };
     }
 
-    let currentDayData = loadDayData(currentDate);
+    let maryData = loadData();
 
-    function loadGlobalData() {
-      try {
-        let raw = localStorage.getItem(STORAGE_PREFIX + 'GLOBAL');
-        if (raw) return JSON.parse(raw);
-
-        let oldGlobal = localStorage.getItem('MARY_FITNESS_DATA_V9_GLOBAL');
-        if (oldGlobal) return JSON.parse(oldGlobal);
-      } catch(e) {}
-      return { weights: [], vo2: [], measurements: [], photos: [], customGoals: [] };
-    }
-    let globalData = loadGlobalData();
-
-    function saveAllData() {
-      localStorage.setItem(STORAGE_PREFIX + currentDate, JSON.stringify(currentDayData));
-      localStorage.setItem(STORAGE_PREFIX + 'GLOBAL', JSON.stringify(globalData));
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(maryData));
       if (db) {
-        db.collection('mary_fitness').doc(currentDate).set(currentDayData).catch(err => {});
-        db.collection('mary_fitness').doc('global_data').set(globalData).catch(err => {});
+        db.collection('mary_fitness_v9').doc('main_data').set(maryData).catch(err => {});
       }
-      showToast("💾 ¡Datos guardados correctamente!");
+      showToast("💾 ¡Guardado exitosamente!");
     }
 
     function showToast(msg) {
@@ -355,8 +230,7 @@
 
     function changeGlobalDate(val) {
       currentDate = val;
-      currentDayData = loadDayData(currentDate);
-      renderAllUI();
+      renderAll();
     }
 
     function switchTab(tab) {
@@ -369,130 +243,17 @@
       if(tab === 'calendario') renderCalendar();
     }
 
-    function initApp() {
+    function init() {
       document.getElementById('global-date').value = currentDate;
-      document.getElementById('weight-date').value = currentDate;
-      document.getElementById('vo2-date').value = currentDate;
-      document.getElementById('measure-date').value = currentDate;
-      document.getElementById('photo-date').value = currentDate;
-      renderAllUI();
+      renderAll();
     }
 
-    function renderAllUI() {
-      renderGoals();
-      renderDaySummary();
+    function renderAll() {
+      renderResumen();
       renderFoodLogs();
       renderCardioHistory();
       renderWorkoutLogs();
-      renderWeightHistory();
-      renderVo2History();
-      renderMeasurementsHistory();
-      renderPhotoGallery();
-    }
-
-    function renderGoals() {
-      const container = document.getElementById('goals-container');
-      container.innerHTML = '';
-
-      const baseGoals = [
-        { id: 'cal', title: 'Calorías diarias (Meta: 1700 kcal)', type: 'daily' },
-        { id: 'prot', title: 'Proteína diaria (Meta: 80g)', type: 'daily' },
-        { id: 'workout_week', title: 'Entrenamientos en la semana (Meta: 5 veces)', type: 'weekly_sessions', target: 5 },
-        { id: 'cardio_z2', title: 'Sesiones de Cardio Zona 2 (Meta: 4 veces)', type: 'weekly_sessions', target: 4 },
-        { id: 'cardio_hiit', title: 'Sesiones de Cardio Intenso (Meta: 2 veces)', type: 'weekly_sessions', target: 2 }
-      ];
-
-      baseGoals.forEach(g => {
-        if(g.type === 'daily') {
-          let valToday = currentDayData.food ? currentDayData.food.reduce((a,b)=>a+parseFloat(b.cal||0),0) : 0;
-          let protToday = currentDayData.food ? currentDayData.food.reduce((a,b)=>a+parseFloat(b.prot||0),0) : 0;
-          let valToCheck = g.id === 'cal' ? valToday : protToday;
-          let isDone = g.id === 'cal' ? (valToCheck > 0 && valToCheck <= 1700) : (valToCheck >= 80);
-          
-          container.innerHTML += `
-            <div class="glass-card rounded-2xl p-4 flex items-center justify-between text-xs">
-              <div>
-                <span class="font-black text-stone-800">${g.title}</span>
-                <p class="text-[10px] text-stone-500 font-bold">Registrado hoy: ${valToCheck}</p>
-              </div>
-              <span class="px-3 py-1 rounded-xl font-black ${isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}">${isDone ? '✓ Cumplido hoy' : 'Pendiente hoy'}</span>
-            </div>`;
-        } else {
-          const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-          const todayIndex = (new Date().getDay() + 6) % 7;
-          
-          let completedCount = 0;
-          let weekHTML = '';
-
-          days.forEach((dayLabel, idx) => {
-            let statusClass = 'bg-stone-100 text-stone-400 border border-stone-200';
-            let icon = '·';
-            
-            let dateKeyForDay = getDateKeyForDayOfWeek(idx);
-            let dayRecord = loadDayData(dateKeyForDay);
-            let matched = false;
-
-            if(g.id === 'workout_week' && dayRecord.workouts && dayRecord.workouts.length > 0) matched = true;
-            if(g.id === 'cardio_z2' && dayRecord.cardio && dayRecord.cardio.some(c => c.type.includes('Zona 2'))) matched = true;
-            if(g.id === 'cardio_hiit' && dayRecord.cardio && dayRecord.cardio.some(c => c.type.includes('Intenso'))) matched = true;
-
-            if(matched) {
-              completedCount++;
-              statusClass = 'bg-emerald-100 text-emerald-800 font-black';
-              icon = '✓';
-            } else if (idx > todayIndex) {
-              statusClass = 'bg-white/50 text-stone-300 border border-dashed border-stone-200';
-              icon = '';
-            }
-
-            weekHTML += `<div class="flex flex-col items-center"><span class="text-[9px] text-stone-400 font-bold mb-1">${dayLabel}</span><div class="w-7 h-7 rounded-xl flex items-center justify-center text-xs ${statusClass}">${icon}</div></div>`;
-          });
-
-          let isCompletedWeek = completedCount >= g.target;
-
-          container.innerHTML += `
-            <div class="glass-card rounded-2xl p-4 space-y-2 text-xs">
-              <div class="flex justify-between items-center">
-                <span class="font-black text-stone-800">${g.title}</span>
-                <span class="px-2.5 py-1 rounded-xl font-black ${isCompletedWeek ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'}">Progreso: ${completedCount}/${g.target} ${isCompletedWeek ? '🎉 ¡Completado!' : ''}</span>
-              </div>
-              <div class="grid grid-cols-7 gap-2 pt-1">${weekHTML}</div>
-            </div>`;
-        }
-      });
-    }
-
-    function getDateKeyForDayOfWeek(dayIndex) {
-      const d = new Date(currentDate);
-      const currentDay = (d.getDay() + 6) % 7;
-      d.setDate(d.getDate() - currentDay + dayIndex);
-      return d.toISOString().slice(0, 10);
-    }
-
-    function renderDaySummary() {
-      const container = document.getElementById('day-summary-details');
-      container.innerHTML = '';
-      
-      let hasContent = false;
-      if(currentDayData.food && currentDayData.food.length > 0) {
-        hasContent = true;
-        container.innerHTML += `<p class="font-bold text-stone-700">🥗 Alimentos (${currentDayData.food.length} items registrados)</p>`;
-      }
-      if(currentDayData.cardio && currentDayData.cardio.length > 0) {
-        hasContent = true;
-        currentDayData.cardio.forEach(c => {
-          container.innerHTML += `<p class="font-bold text-emerald-700">🏃‍♀️ Cardio (${c.type}): ${c.min} min | ${c.km || 0} km | ${c.kcal} kcal</p>`;
-        });
-      }
-      if(currentDayData.workouts && currentDayData.workouts.length > 0) {
-        hasContent = true;
-        currentDayData.workouts.forEach(w => {
-          container.innerHTML += `<p class="font-bold text-purple-700">🏋️‍♀️ Entreno (${w.name}): ${w.min} min | ${w.kcal} kcal | Ejercicios: ${w.exercises}</p>`;
-        });
-      }
-      if(!hasContent) {
-        container.innerHTML = `<p class="text-stone-400 italic">No hay registros detallados para este día aún.</p>`;
-      }
+      renderWellness();
     }
 
     function addFoodItem() {
@@ -501,12 +262,12 @@
       const prot = document.getElementById('food-prot').value;
       const carb = document.getElementById('food-carb').value;
       const fat = document.getElementById('food-fat').value;
-
-      if(!name) return alert("Ingresa el nombre del alimento");
-      if(!currentDayData.food) currentDayData.food = [];
-      currentDayData.food.push({ id: Date.now(), name, cal, prot, carb, fat });
-      saveAllData();
-      renderAllUI();
+      if(!name) return alert("Ingresa el alimento");
+      
+      if(!maryData.food) maryData.food = [];
+      maryData.food.push({ id: Date.now(), date: currentDate, name, cal, prot, carb, fat });
+      saveData();
+      renderAll();
       document.getElementById('food-name').value = '';
       document.getElementById('food-cal').value = '';
       document.getElementById('food-prot').value = '';
@@ -518,30 +279,28 @@
       const container = document.getElementById('food-logs-container');
       const search = (document.getElementById('food-search').value || '').toLowerCase();
       container.innerHTML = '';
-
-      if(!currentDayData.food) currentDayData.food = [];
-      let filtered = currentDayData.food.filter(f => f.name.toLowerCase().includes(search));
+      if(!maryData.food) maryData.food = [];
+      let filtered = maryData.food.filter(f => f.name.toLowerCase().includes(search));
       if(filtered.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No se encontraron alimentos.</p>`;
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No hay alimentos registrados.</p>`;
         return;
       }
-
       filtered.forEach(f => {
         container.innerHTML += `
           <div class="glass-card p-3 rounded-2xl flex justify-between items-center text-xs">
             <div>
-              <strong class="text-stone-800">${f.name}</strong>
-              <p class="text-[10px] text-stone-500 font-bold">🔥 ${f.cal || 0} kcal | 🥩 Prot: ${f.prot || 0}g | 🍞 Carb: ${f.carb || 0}g | 🧈 Grasa: ${f.fat || 0}g</p>
+              <strong>${f.date} - ${f.name}</strong>
+              <p class="text-[10px] text-stone-500">🔥 ${f.cal} kcal | P: ${f.prot}g | C: ${f.carb}g | G: ${f.fat}g</p>
             </div>
-            <button onclick="deleteFood(${f.id})" class="text-red-400 font-bold cursor-pointer">✕</button>
+            <button onclick="deleteFood(${f.id})" class="text-red-400 font-bold">✕</button>
           </div>`;
       });
     }
 
     function deleteFood(id) {
-      currentDayData.food = currentDayData.food.filter(f => f.id !== id);
-      saveAllData();
-      renderAllUI();
+      maryData.food = maryData.food.filter(f => f.id !== id);
+      saveData();
+      renderAll();
     }
 
     function addCardioSession() {
@@ -550,12 +309,11 @@
       const km = document.getElementById('cardio-km').value;
       const kcal = document.getElementById('cardio-kcal').value;
       const pace = document.getElementById('cardio-pace').value;
-
-      if(!min) return alert("Ingresa los minutos de cardio");
-      if(!currentDayData.cardio) currentDayData.cardio = [];
-      currentDayData.cardio.push({ id: Date.now(), type, min, km, kcal, pace });
-      saveAllData();
-      renderAllUI();
+      if(!min) return alert("Ingresa los minutos");
+      if(!maryData.cardio) maryData.cardio = [];
+      maryData.cardio.push({ id: Date.now(), date: currentDate, type, min, km, kcal, pace });
+      saveData();
+      renderAll();
       document.getElementById('cardio-min').value = '';
       document.getElementById('cardio-km').value = '';
       document.getElementById('cardio-kcal').value = '';
@@ -564,305 +322,129 @@
 
     function renderCardioHistory() {
       const container = document.getElementById('cardio-history-container');
-      const statsContainer = document.getElementById('cardio-stats-summary');
       container.innerHTML = '';
-      let allCardio = [];
-
-      if(currentDayData.cardio) {
-        currentDayData.cardio.forEach(c => allCardio.push({ ...c, date: currentDate }));
-      }
-
-      let totalMin = allCardio.reduce((a,b)=>a+parseFloat(b.min||0),0);
-      let totalKm = allCardio.reduce((a,b)=>a+parseFloat(b.km||0),0).toFixed(1);
-      let totalKcal = allCardio.reduce((a,b)=>a+parseFloat(b.kcal||0),0);
-
-      statsContainer.innerHTML = `
-        <div class="glass-card p-3 rounded-2xl text-xs"><strong class="text-stone-400 block">Sesiones</strong><span class="text-base font-black text-stone-800">${allCardio.length}</span></div>
-        <div class="glass-card p-3 rounded-2xl text-xs"><strong class="text-stone-400 block">Minutos Totales</strong><span class="text-base font-black text-[#5fa89b]">${totalMin} min</span></div>
-        <div class="glass-card p-3 rounded-2xl text-xs"><strong class="text-stone-400 block">Kilómetros</strong><span class="text-base font-black text-[#b492cd]">${totalKm} km</span></div>
-        <div class="glass-card p-3 rounded-2xl text-xs"><strong class="text-stone-400 block">Calorías Quemadas</strong><span class="text-base font-black text-amber-500">${totalKcal} kcal</span></div>
-      `;
-
-      if(allCardio.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No hay sesiones de cardio registradas.</p>`;
+      if(!maryData.cardio) maryData.cardio = [];
+      if(maryData.cardio.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No hay cardio registrado.</p>`;
         return;
       }
-
-      allCardio.forEach(c => {
+      maryData.cardio.forEach(c => {
         container.innerHTML += `
           <div class="glass-card p-3 rounded-2xl flex justify-between items-center text-xs">
             <div>
-              <strong class="text-stone-800">📅 ${c.date} · ${c.type}</strong>
-              <p class="text-[10px] text-stone-500 font-bold">⏱️ ${c.min} min | 📍 ${c.km || 0} km | 🔥 ${c.kcal || 0} kcal | ⚡ Ritmo: ${c.pace || '-'}</p>
+              <strong>${c.date} - ${c.type}</strong>
+              <p class="text-[10px] text-stone-500">⏱️ ${c.min} min | 📍 ${c.km} km | 🔥 ${c.kcal} kcal | Ritmo: ${c.pace}</p>
             </div>
+            <button onclick="deleteCardio(${c.id})" class="text-red-400 font-bold">✕</button>
           </div>`;
       });
+    }
+
+    function deleteCardio(id) {
+      maryData.cardio = maryData.cardio.filter(c => c.id !== id);
+      saveData();
+      renderAll();
     }
 
     function addWorkoutSession() {
       const name = document.getElementById('workout-name').value;
       const min = document.getElementById('workout-min').value;
       const kcal = document.getElementById('workout-kcal').value;
-      const exercises = document.getElementById('workout-exercises').value;
+      const rpe = document.getElementById('workout-rpe').value;
       const notes = document.getElementById('workout-notes').value;
-
-      if(!name) return alert("Ingresa el nombre del entreno");
-      if(!currentDayData.workouts) currentDayData.workouts = [];
-      currentDayData.workouts.push({ id: Date.now(), name, min, kcal, exercises, notes });
-      saveAllData();
-      renderAllUI();
+      if(!name) return alert("Ingresa el nombre");
+      if(!maryData.workouts) maryData.workouts = [];
+      maryData.workouts.push({ id: Date.now(), date: currentDate, name, min, kcal, rpe, notes });
+      saveData();
+      renderAll();
       document.getElementById('workout-name').value = '';
       document.getElementById('workout-min').value = '';
       document.getElementById('workout-kcal').value = '';
-      document.getElementById('workout-exercises').value = '';
+      document.getElementById('workout-rpe').value = '';
       document.getElementById('workout-notes').value = '';
     }
 
     function renderWorkoutLogs() {
       const container = document.getElementById('workout-logs-container');
       container.innerHTML = '';
-      let allWorkouts = [];
-
-      if(currentDayData.workouts) {
-        currentDayData.workouts.forEach(w => allWorkouts.push({ ...w, date: currentDate }));
-      }
-
-      if(allWorkouts.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No se encontraron entrenamientos.</p>`;
+      if(!maryData.workouts) maryData.workouts = [];
+      if(maryData.workouts.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No hay entrenamientos de fuerza.</p>`;
         return;
       }
-
-      allWorkouts.forEach(w => {
+      maryData.workouts.forEach(w => {
         container.innerHTML += `
           <div class="glass-card p-3 rounded-2xl space-y-1 text-xs">
-            <div class="flex justify-between items-center">
-              <strong class="text-stone-800">📅 ${w.date} · ${w.name}</strong>
-              <span class="text-[10px] font-bold text-[#b492cd]">⏱️ ${w.min} min | 🔥 ${w.kcal} kcal</span>
+            <div class="flex justify-between">
+              <strong>${w.date} - ${w.name}</strong>
+              <button onclick="deleteWorkout(${w.id})" class="text-red-400 font-bold">✕</button>
             </div>
-            <p class="text-stone-600 font-bold">Ejercicios: ${w.exercises || 'N/A'}</p>
-            ${w.notes ? `<p class="text-stone-400 italic">Notas: ${w.notes}</p>` : ''}
+            <p class="text-stone-600">⏱️ ${w.min} min | 🔥 ${w.kcal} kcal | RPE: ${w.rpe}</p>
+            ${w.notes ? `<p class="text-stone-400 italic">${w.notes}</p>` : ''}
           </div>`;
       });
+    }
+
+    function deleteWorkout(id) {
+      maryData.workouts = maryData.workouts.filter(w => w.id !== id);
+      saveData();
+      renderAll();
+    }
+
+    function saveWellness() {
+      const water = document.getElementById('b-water').value;
+      const sleep = document.getElementById('b-sleep').value;
+      const mood = document.getElementById('b-mood').value;
+      if(!maryData.wellness) maryData.wellness = [];
+      maryData.wellness.push({ id: Date.now(), date: currentDate, water, sleep, mood });
+      saveData();
+      renderWellness();
+    }
+
+    function renderWellness() {
+      const container = document.getElementById('wellness-history');
+      container.innerHTML = '';
+      if(!maryData.wellness) maryData.wellness = [];
+      maryData.wellness.forEach(w => {
+        container.innerHTML += `
+          <div class="glass-card p-2 rounded-xl text-xs flex justify-between items-center">
+            <span>📅 ${w.date} | 💧 ${w.water}L | 💤 ${w.sleep}hrs | 🧘‍♀️ ${w.mood}</span>
+            <button onclick="deleteWellness(${w.id})" class="text-red-400 font-bold">✕</button>
+          </div>`;
+      });
+    }
+
+    function deleteWellness(id) {
+      maryData.wellness = maryData.wellness.filter(w => w.id !== id);
+      saveData();
+      renderAll();
+    }
+
+    function renderResumen() {
+      const stats = document.getElementById('resumen-stats');
+      const goals = document.getElementById('resumen-goals');
+      if(!maryData.food) maryData.food = [];
+      let totalCal = maryData.food.reduce((a,b)=>a+parseFloat(b.cal||0),0);
+      let totalProt = maryData.food.reduce((a,b)=>a+parseFloat(b.prot||0),0);
+      let totalKm = (maryData.cardio || []).reduce((a,b)=>a+parseFloat(b.km||0),0).toFixed(1);
+
+      stats.innerHTML = `
+        <div class="glass-card p-3 rounded-2xl text-xs"><strong class="text-stone-400 block">Total Calorías</strong><span class="text-base font-black">${totalCal} kcal</span></div>
+        <div class="glass-card p-3 rounded-2xl text-xs"><strong class="text-stone-400 block">Total Proteína</strong><span class="text-base font-black">${totalProt} g</span></div>
+        <div class="glass-card p-3 rounded-2xl text-xs"><strong class="text-stone-400 block">Cardio Total</strong><span class="text-base font-black">${totalKm} km</span></div>
+      `;
+      goals.innerHTML = `<p class="text-xs text-stone-500">Resumen operativo de tu suite activado con éxito.</p>`;
     }
 
     function renderCalendar() {
       const grid = document.getElementById('calendar-grid');
-      const title = document.getElementById('calendar-month-title');
       grid.innerHTML = '';
-
-      const year = calendarCurrentDate.getFullYear();
-      const month = calendarCurrentDate.getMonth();
-      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-      title.innerText = `${monthNames[month]} ${year}`;
-
-      const daysOfWeek = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-      daysOfWeek.forEach(d => grid.innerHTML += `<div class="font-black text-stone-400 text-[10px] pb-1">${d}</div>`);
-
-      const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
-      const totalDays = new Date(year, month + 1, 0).getDate();
-
-      for(let i=0; i<firstDayIndex; i++) grid.innerHTML += `<div></div>`;
-
-      for(let day=1; day<=totalDays; day++) {
-        const mm = String(month + 1).padStart(2, '0');
-        const dd = String(day).padStart(2, '0');
-        const dateStr = `${year}-${mm}-${dd}`;
-        const dayData = loadDayData(dateStr);
-
-        let hasCardio = dayData.cardio && dayData.cardio.length > 0;
-        let hasWorkout = dayData.workouts && dayData.workouts.length > 0;
-        
-        let bgStyle = 'bg-white/60 text-stone-700';
-        if(hasCardio && hasWorkout) bgStyle = 'bg-gradient-to-tr from-[#5fa89b] to-[#b492cd] text-white font-black shadow-xs';
-        else if(hasCardio) bgStyle = 'bg-[#5fa89b] text-white font-black';
-        else if(hasWorkout) bgStyle = 'bg-[#b492cd] text-white font-black';
-
-        grid.innerHTML += `
-          <div onclick="jumpToDate('${dateStr}')" class="h-10 rounded-xl flex flex-col items-center justify-center cursor-pointer border border-[#ebd7e3] text-xs transition hover:scale-105 ${bgStyle}">
-            <span>${day}</span>
-          </div>`;
+      for(let i=1; i<=30; i++) {
+        grid.innerHTML += `<div class="h-10 rounded-xl bg-white border border-[#ebd7e3] flex items-center justify-center text-xs font-bold">${i}</div>`;
       }
     }
 
-    function changeCalendarMonth(delta) {
-      calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + delta);
-      renderCalendar();
-    }
-
-    function jumpToDate(dateStr) {
-      currentDate = dateStr;
-      document.getElementById('global-date').value = dateStr;
-      currentDayData = loadDayData(dateStr);
-      switchTab('resumen');
-      renderAllUI();
-    }
-
-    function saveWeightLog() {
-      const date = document.getElementById('weight-date').value;
-      const kg = document.getElementById('weight-kg').value;
-      const note = document.getElementById('weight-note').value;
-      if(!kg) return alert("Ingresa tu peso");
-      
-      globalData.weights.push({ id: Date.now(), date, kg, note });
-      saveAllData();
-      renderWeightHistory();
-      document.getElementById('weight-kg').value = '';
-      document.getElementById('weight-note').value = '';
-    }
-
-    function renderWeightHistory() {
-      const container = document.getElementById('weight-history-container');
-      const avgSpan = document.getElementById('current-weight-avg');
-      container.innerHTML = '';
-      
-      if(globalData.weights.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center">No hay registros de peso.</p>`;
-        avgSpan.innerText = `Promedio semanal: -- kg`;
-        return;
-      }
-
-      globalData.weights.sort((a,b) => b.date.localeCompare(a.date));
-      let sum = globalData.weights.reduce((a,b)=>a+parseFloat(b.kg),0);
-      let avg = (sum / globalData.weights.length).toFixed(1);
-      avgSpan.innerText = `Promedio: ${avg} kg`;
-
-      globalData.weights.forEach(w => {
-        container.innerHTML += `
-          <div class="glass-card p-2.5 rounded-2xl flex justify-between items-center text-xs">
-            <div>
-              <strong class="text-stone-800">📅 ${w.date} · ${w.kg} kg</strong>
-              ${w.note ? `<p class="text-[10px] text-stone-500 font-bold">Nota: ${w.note}</p>` : ''}
-            </div>
-            <button onclick="deleteWeight(${w.id})" class="text-red-400 font-bold cursor-pointer">✕</button>
-          </div>`;
-      });
-    }
-
-    function deleteWeight(id) {
-      globalData.weights = globalData.weights.filter(w => w.id !== id);
-      saveAllData();
-      renderWeightHistory();
-    }
-
-    function saveVo2Log() {
-      const date = document.getElementById('vo2-date').value;
-      const val = document.getElementById('vo2-value').value;
-      if(!val) return alert("Ingresa el valor de VO2 Max");
-
-      globalData.vo2.push({ id: Date.now(), date, val });
-      saveAllData();
-      renderVo2History();
-      document.getElementById('vo2-value').value = '';
-    }
-
-    function renderVo2History() {
-      const container = document.getElementById('vo2-history-container');
-      const currentSpan = document.getElementById('current-vo2');
-      container.innerHTML = '';
-
-      if(globalData.vo2.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center">Sin registros de VO2 Max.</p>`;
-        currentSpan.innerText = `Actual: -- mL/kg/min`;
-        return;
-      }
-
-      globalData.vo2.sort((a,b) => b.date.localeCompare(a.date));
-      currentSpan.innerText = `Actual: ${globalData.vo2[0].val} mL/kg/min`;
-
-      globalData.vo2.forEach(v => {
-        container.innerHTML += `
-          <div class="glass-card p-2.5 rounded-2xl flex justify-between items-center text-xs">
-            <strong class="text-stone-800">📅 ${v.date} · VO2 Max: ${v.val} mL/kg/min</strong>
-            <button onclick="deleteVo2(${v.id})" class="text-red-400 font-bold cursor-pointer">✕</button>
-          </div>`;
-      });
-    }
-
-    function deleteVo2(id) {
-      globalData.vo2 = globalData.vo2.filter(v => v.id !== id);
-      saveAllData();
-      renderVo2History();
-    }
-
-    function saveMeasurements() {
-      const date = document.getElementById('measure-date').value;
-      const cintura = document.getElementById('m-cintura').value;
-      const cadera = document.getElementById('m-cadera').value;
-      const pierna = document.getElementById('m-pierna').value;
-      const brazo = document.getElementById('m-brazo').value;
-
-      globalData.measurements.push({ id: Date.now(), date, cintura, cadera, pierna, brazo });
-      saveAllData();
-      renderMeasurementsHistory();
-      alert("Medidas guardadas con éxito");
-    }
-
-    function renderMeasurementsHistory() {
-      const container = document.getElementById('measurements-history');
-      container.innerHTML = '';
-      globalData.measurements.sort((a,b) => b.date.localeCompare(a.date));
-
-      globalData.measurements.push(...[]);
-      globalData.measurements.forEach(m => {
-        container.innerHTML += `
-          <div class="glass-card p-2.5 rounded-2xl text-xs space-y-1">
-            <div class="flex justify-between"><strong class="text-stone-800">📅 ${m.date}</strong><button onclick="deleteMeasure(${m.id})" class="text-red-400 font-bold">✕</button></div>
-            <p class="text-stone-600 font-bold">Cintura: ${m.cintura||'-'}cm | Cadera: ${m.cadera||'-'}cm | Pierna: ${m.pierna||'-'}cm | Brazo: ${m.brazo||'-'}cm</p>
-          </div>`;
-      });
-    }
-
-    function deleteMeasure(id) {
-      globalData.measurements = globalData.measurements.filter(m => m.id !== id);
-      saveAllData();
-      renderMeasurementsHistory();
-    }
-
-    function saveProgressPhoto() {
-      const date = document.getElementById('photo-date').value;
-      const url = document.getElementById('photo-url').value;
-      if(!url) return alert("Ingresa el enlace o URL de la foto");
-
-      globalData.photos.push({ id: Date.now(), date, url });
-      saveAllData();
-      renderPhotoGallery();
-      document.getElementById('photo-url').value = '';
-    }
-
-    function renderPhotoGallery() {
-      const container = document.getElementById('photo-gallery-container');
-      container.innerHTML = '';
-      globalData.photos.sort((a,b) => b.date.localeCompare(a.date));
-
-      if(globalData.photos.photos && globalData.photos.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 col-span-3 text-center">No hay fotos de progreso aún.</p>`;
-        return;
-      }
-
-      globalData.photos.forEach(p => {
-        container.innerHTML += `
-          <div class="relative group rounded-xl overflow-hidden border border-[#ebd7e3] bg-white h-24">
-            <img src="${p.url}" alt="${p.date}" class="w-full h-full object-cover">
-            <div class="absolute bottom-0 inset-x-0 bg-stone-900/70 text-white text-[9px] font-bold p-1 text-center">${p.date}</div>
-            <button onclick="deletePhoto(${p.id})" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px] font-bold">✕</button>
-          </div>`;
-      });
-    }
-
-    function deletePhoto(id) {
-      globalData.photos = globalData.photos.filter(p => p.id !== id);
-      saveAllData();
-      renderPhotoGallery();
-    }
-
-    function openNewGoalModal() {
-      const name = prompt("Nombre de la nueva meta personalizada:");
-      if(name) {
-        alert("¡Meta creada con éxito!");
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
