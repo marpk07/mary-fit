@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1135,73 +1134,125 @@
 
       const today = new Date();
       const todayStr = today.toISOString().slice(0, 10);
+      const dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
+      // Semana calendario real (Lunes a Domingo) que contiene hoy — así los días futuros
+      // se muestran vacíos en vez de contarse como si ya hubieran pasado.
+      const todayDow = (today.getDay() + 6) % 7; // 0=Lunes ... 6=Domingo
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - todayDow);
       const weekDays = [];
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth() + 1).padStart(2, '0');
         const dd = String(d.getDate()).padStart(2, '0');
-        const dateStr = `${yyyy}-${mm}-${dd}`;
-        const dayIdx = (d.getDay() + 6) % 7;
-        const dayName = ['L', 'M', 'X', 'J', 'V', 'S', 'D'][dayIdx];
-        weekDays.push({ dateStr, dayName, rawDay: dayIdx });
+        weekDays.push({ dateStr: `${yyyy}-${mm}-${dd}`, dayName: dayNames[i] });
       }
-      weekDays.sort((a,b) => a.rawDay - b.rawDay);
+
+      // ¿Ocurrió este tipo de meta (cardio/entreno) en una fecha puntual?
+      function metricOccurredOnDate(metricType, dateStr) {
+        if (metricType === 'entreno') return maryData.entrenamiento.some(x => x.date === dateStr);
+        if (metricType === 'cardio_sesiones') return maryData.cardio.some(x => x.date === dateStr);
+        if (metricType === 'cardio_z2') return maryData.cardio.some(x => x.date === dateStr && (x.lugar || '').toLowerCase().includes('zona 2'));
+        if (metricType === 'cardio_hiit') return maryData.cardio.some(x => x.date === dateStr && (x.lugar || '').toLowerCase().includes('intenso'));
+        return false;
+      }
+
+      // Estado diario de metas de tipo cal/prot/agua — SOLO evalúa si hay datos de esa
+      // categoría específica ese día (antes contaba con datos de cardio/salud aunque no
+      // hubiera comida registrada, mostrando check falsos).
+      function getDailyMetricStatus(metricType, dateStr, targetValue) {
+        if (metricType === 'prot' || metricType === 'cal') {
+          const dayAl = maryData.alimentacion.filter(x => x.date === dateStr);
+          if (dayAl.length === 0) return 'empty';
+          const sum = dayAl.reduce((a, b) => a + (metricType === 'prot' ? b.prot : b.cal), 0);
+          if (metricType === 'prot') return sum >= targetValue ? 'ok' : 'fail';
+          return sum <= targetValue ? 'ok' : 'fail';
+        }
+        if (metricType === 'agua') {
+          const saludDay = maryData.salud.find(x => x.date === dateStr);
+          if (!saludDay) return 'empty';
+          return saludDay.agua >= targetValue ? 'ok' : 'fail';
+        }
+        if (['entreno', 'cardio_sesiones', 'cardio_z2', 'cardio_hiit'].includes(metricType)) {
+          return metricOccurredOnDate(metricType, dateStr) ? 'ok' : 'empty';
+        }
+        return 'empty';
+      }
 
       maryData.customGoals.forEach(g => {
         let trackerDaysHtml = '';
-        
+
         if (g.frequency === 'Semanal') {
           let totalCount = 0;
-          if (g.metricType === 'entreno') {
-            totalCount = maryData.entrenamiento.filter(x => weekDays.some(w => w.dateStr === x.date)).length;
-          } else if (g.metricType === 'cardio_sesiones') {
-            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date)).length;
-          } else if (g.metricType === 'cardio_z2') {
-            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date) && (x.lugar || '').toLowerCase().includes('zona 2')).length;
-          } else if (g.metricType === 'cardio_hiit') {
-            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date) && (x.lugar || '').toLowerCase().includes('intenso')).length;
-          }
+          let dayBoxesHtml = '';
+
+          weekDays.forEach(w => {
+            const isFuture = w.dateStr > todayStr;
+            let occurred = false;
+            if (!isFuture) {
+              if (['entreno', 'cardio_sesiones', 'cardio_z2', 'cardio_hiit'].includes(g.metricType)) {
+                occurred = metricOccurredOnDate(g.metricType, w.dateStr);
+              } else {
+                occurred = getDailyMetricStatus(g.metricType, w.dateStr, g.targetValue) === 'ok';
+              }
+              if (occurred) totalCount++;
+            }
+
+            let boxClass, symbol;
+            if (isFuture) {
+              boxClass = 'bg-white/40 border-[#e5e5e5] text-stone-300';
+              symbol = '·';
+            } else if (occurred) {
+              boxClass = 'bg-emerald-500/20 border-emerald-500/60 text-emerald-800 font-black';
+              symbol = '✓';
+            } else {
+              boxClass = 'bg-white border-[#c8e3dc] text-stone-300';
+              symbol = '·';
+            }
+
+            dayBoxesHtml += `
+              <div class="flex flex-col items-center">
+                <span class="text-[9px] font-extrabold text-stone-500 mb-1">${w.dayName}</span>
+                <div class="w-7 h-7 rounded-xl border flex items-center justify-center text-xs ${boxClass}" title="${w.dateStr}">
+                  ${symbol}
+                </div>
+              </div>`;
+          });
 
           const fulfilled = totalCount >= g.targetValue;
-          const isWeekEnded = weekDays[weekDays.length - 1].dateStr < todayStr;
+          const isLastDayOfWeek = todayStr >= weekDays[6].dateStr;
 
           let badgeHtml = '';
           if (fulfilled) {
-            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-800 font-black text-xs">🎉 ¡Completado (${totalCount}/${g.targetValue})!</div>`;
-          } else if (!isWeekEnded) {
-            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-purple-100 border border-purple-300 text-purple-800 font-bold text-xs">En curso (${totalCount}/${g.targetValue})</div>`;
+            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-800 font-black text-xs whitespace-nowrap">🎉 ¡Completado (${totalCount}/${g.targetValue})!</div>`;
+          } else if (isLastDayOfWeek) {
+            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-red-500/10 border border-red-400 text-red-600 font-bold text-xs whitespace-nowrap">No cumplida (${totalCount}/${g.targetValue})</div>`;
           } else {
-            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-red-500/10 border border-red-400 text-red-600 font-bold text-xs">No cumplida (${totalCount}/${g.targetValue})</div>`;
+            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-purple-100 border border-purple-300 text-purple-800 font-bold text-xs whitespace-nowrap">En progreso (${totalCount}/${g.targetValue})</div>`;
           }
 
           trackerDaysHtml = `
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3 flex-wrap">
+              <div class="flex space-x-1.5">${dayBoxesHtml}</div>
               ${badgeHtml}
             </div>`;
         } else {
           weekDays.forEach(w => {
-            const dayAl = maryData.alimentacion.filter(x => x.date === w.dateStr);
-            const sumProt = dayAl.reduce((a,b)=>a+b.prot,0);
-            const sumCal = dayAl.reduce((a,b)=>a+b.cal,0);
-            const hasData = dayAl.length > 0 || maryData.cardio.some(x=>x.date===w.dateStr) || maryData.salud.some(x=>x.date===w.dateStr);
-
-            let status = 'empty'; 
-            if (hasData) {
-              if (g.metricType === 'prot') {
-                status = sumProt >= g.targetValue ? 'ok' : 'fail';
-              } else if (g.metricType === 'cal') {
-                status = sumCal <= g.targetValue ? 'ok' : 'fail';
-              }
-            }
+            const isFuture = w.dateStr > todayStr;
+            const status = isFuture ? 'empty' : getDailyMetricStatus(g.metricType, w.dateStr, g.targetValue);
 
             let boxClass = 'bg-white border-[#c8e3dc] text-stone-300';
             let symbol = '·';
-            if (status === 'ok') {
+            if (isFuture) {
+              boxClass = 'bg-white/40 border-[#e5e5e5] text-stone-300';
+              symbol = '·';
+            } else if (status === 'ok') {
               boxClass = 'bg-emerald-500/20 border-emerald-500/60 text-emerald-800 font-black';
               symbol = '✓';
-            } else if (status === 'fail' && w.dateStr <= todayStr) {
+            } else if (status === 'fail') {
               boxClass = 'bg-red-500/20 border-red-500/60 text-red-600 font-black';
               symbol = '✗';
             }
