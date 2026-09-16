@@ -273,7 +273,7 @@
     ✨ ¡Guardado con éxito!
   </div>
 
-  <!-- SCRIPT DE LA APLICACIÓN -->
+  <!-- SCRIPT DE LA APLICACIÓN CON SISTEMA DE RESCATE DE DATOS -->
   <script>
     // Configuración Firebase Firestore
     const firebaseConfig = {
@@ -296,13 +296,25 @@
     let currentDate = new Date().toISOString().slice(0, 10);
     let calendarCurrentDate = new Date();
 
-    function getStorageKey(date) { return STORAGE_PREFIX + date; }
-
+    // Sistema de rescate inteligente de datos anteriores
     function loadDayData(date) {
       try {
-        const raw = localStorage.getItem(getStorageKey(date));
+        // 1. Intentar la llave actual
+        let raw = localStorage.getItem(STORAGE_PREFIX + date);
         if (raw) return JSON.parse(raw);
+
+        // 2. Buscar en llaves anteriores (V9, V8, etc.) para recuperar lo que ya tenías
+        const oldPrefixes = ['MARY_FITNESS_DATA_V9_', 'MARY_FITNESS_DATA_', 'MARY_FITNESS_'];
+        for (let prefix of oldPrefixes) {
+          raw = localStorage.getItem(prefix + date);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            localStorage.setItem(STORAGE_PREFIX + date, JSON.stringify(parsed));
+            return parsed;
+          }
+        }
       } catch(e) {}
+
       return {
         food: [],
         cardio: [],
@@ -313,13 +325,22 @@
 
     let currentDayData = loadDayData(currentDate);
 
-    // Cargar datos globales (Peso, Medidas, Fotos, VO2 Max)
     function loadGlobalData() {
       try {
-        return JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'GLOBAL')) || { weights: [], vo2: [], measurements: [], photos: [], customGoals: [] };
-      } catch(e) {
-        return { weights: [], vo2: [], measurements: [], photos: [], customGoals: [] };
-      }
+        let raw = localStorage.getItem(STORAGE_PREFIX + 'GLOBAL');
+        if (raw) return JSON.parse(raw);
+
+        const oldGlobalKeys = ['MARY_FITNESS_DATA_V9_GLOBAL', 'MARY_FITNESS_GLOBAL'];
+        for (let k of oldGlobalKeys) {
+          raw = localStorage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            localStorage.setItem(STORAGE_PREFIX + 'GLOBAL', JSON.stringify(parsed));
+            return parsed;
+          }
+        }
+      } catch(e) {}
+      return { weights: [], vo2: [], measurements: [], photos: [], customGoals: [] };
     }
     let globalData = loadGlobalData();
 
@@ -332,6 +353,8 @@
       }
       showToast("💾 ¡Datos guardados correctamente!");
     }
+
+    function getStorageKey(date) { return STORAGE_PREFIX + date; }
 
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -392,7 +415,6 @@
       const container = document.getElementById('goals-container');
       container.innerHTML = '';
 
-      // Metas predeterminadas de Mary
       const baseGoals = [
         { id: 'cal', title: 'Calorías diarias (Meta: 1700 kcal)', type: 'daily' },
         { id: 'prot', title: 'Proteína diaria (Meta: 80g)', type: 'daily' },
@@ -403,7 +425,6 @@
 
       baseGoals.forEach(g => {
         if(g.type === 'daily') {
-          // Meta Diaria
           let valToday = 0;
           if(g.id === 'cal') valToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.cal||0),0);
           if(g.id === 'prot') valToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.prot||0),0);
@@ -418,9 +439,8 @@
               <span class="px-3 py-1 rounded-xl font-black ${isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}">${isDone ? '✓ Cumplido hoy' : 'Pendiente hoy'}</span>
             </div>`;
         } else {
-          // Meta Semanal por Sesiones (L M X J V S D) sin X rojas anticipadas
           const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-          const todayIndex = (new Date().getDay() + 6) % 7; // 0 = Lunes
+          const todayIndex = (new Date().getDay() + 6) % 7;
           
           let completedCount = 0;
           let weekHTML = '';
@@ -429,7 +449,6 @@
             let statusClass = 'bg-stone-100 text-stone-400 border border-stone-200';
             let icon = '·';
             
-            // Revisar si en ese día de la semana hubo registro de esa meta
             let dateKeyForDay = getDateKeyForDayOfWeek(idx);
             let dayRecord = loadDayData(dateKeyForDay);
             let matched = false;
@@ -443,7 +462,6 @@
               statusClass = 'bg-emerald-100 text-emerald-800 font-black';
               icon = '✓';
             } else if (idx > todayIndex) {
-              // Días futuros de la semana se quedan limpios sin X rojas
               statusClass = 'bg-white/50 text-stone-300 border border-dashed border-stone-200';
               icon = '';
             }
@@ -498,7 +516,7 @@
       }
     }
 
-    // --- 2. ALIMENTACIÓN CON BUSCADOR Y SIN EXCEDIDO ---
+    // --- 2. ALIMENTACIÓN ---
     function addFoodItem() {
       const name = document.getElementById('food-name').value;
       const cal = document.getElementById('food-cal').value;
@@ -546,7 +564,7 @@
       renderAllUI();
     }
 
-    // --- 3. CARDIO CON FILTROS Y VO2 MAX ---
+    // --- 3. CARDIO ---
     function addCardioSession() {
       const type = document.getElementById('cardio-type').value;
       const min = document.getElementById('cardio-min').value;
@@ -576,13 +594,17 @@
 
       for(let i=0; i<localStorage.length; i++) {
         const k = localStorage.key(i);
-        if(k && k.startsWith(STORAGE_PREFIX) && !k.endsWith('GLOBAL')) {
-          const dateStr = k.replace(STORAGE_PREFIX, '');
-          if(from && dateStr < from) continue;
-          if(to && dateStr > to) continue;
-          const data = JSON.parse(localStorage.getItem(k));
-          if(data.cardio) {
-            data.cardio.forEach(c => allCardio.push({ ...c, date: dateStr }));
+        if(k && k.includes('FITNESS') && !k.endsWith('GLOBAL')) {
+          const dateStr = k.split('_').pop();
+          if(dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            if(from && dateStr < from) continue;
+            if(to && dateStr > to) continue;
+            try {
+              const data = JSON.parse(localStorage.getItem(k));
+              if(data.cardio) {
+                data.cardio.forEach(c => allCardio.push({ ...c, date: dateStr }));
+              }
+            } catch(e) {}
           }
         }
       }
@@ -620,7 +642,7 @@
       });
     }
 
-    // --- 4. ENTRENO CON BUSCADOR DE EJERCICIOS ---
+    // --- 4. ENTRENO ---
     function addWorkoutSession() {
       const name = document.getElementById('workout-name').value;
       const min = document.getElementById('workout-min').value;
@@ -647,11 +669,15 @@
       let allWorkouts = [];
       for(let i=0; i<localStorage.length; i++) {
         const k = localStorage.key(i);
-        if(k && k.startsWith(STORAGE_PREFIX) && !k.endsWith('GLOBAL')) {
-          const dateStr = k.replace(STORAGE_PREFIX, '');
-          const data = JSON.parse(localStorage.getItem(k));
-          if(data.workouts) {
-            data.workouts.forEach(w => allWorkouts.push({ ...w, date: dateStr }));
+        if(k && k.includes('FITNESS') && !k.endsWith('GLOBAL')) {
+          const dateStr = k.split('_').pop();
+          if(dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            try {
+              const data = JSON.parse(localStorage.getItem(k));
+              if(data.workouts) {
+                data.workouts.forEach(w => allWorkouts.push({ ...w, date: dateStr }));
+              }
+            } catch(e) {}
           }
         }
       }
@@ -733,7 +759,7 @@
       renderAllUI();
     }
 
-    // --- 6. BIENESTAR, SALUD, PESO, VO2 MAX Y FOTOS ---
+    // --- 6. BIENESTAR, SALUD, PESO Y FOTOS ---
     function saveWeightLog() {
       const date = document.getElementById('weight-date').value;
       const kg = document.getElementById('weight-kg').value;
