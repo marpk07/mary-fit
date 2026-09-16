@@ -47,6 +47,11 @@
       box-shadow: 0 4px 15px rgba(180, 146, 205, 0.4);
     }
 
+    .modal-overlay {
+      background-color: rgba(61, 44, 61, 0.45);
+      backdrop-filter: blur(6px);
+    }
+
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f0e6ed; }
     ::-webkit-scrollbar-thumb { background: #d9a7c7; border-radius: 999px; }
@@ -81,6 +86,15 @@
       </div>
     </div>
   </header>
+
+  <!-- BARRA DE RESPALDO Y RESCATE (COPIAR / PEGAR) -->
+  <div class="bg-[#f7f0f4] border-b border-[#ebd7e3] px-4 py-1.5 flex justify-between items-center text-[11px] font-bold text-stone-600 max-w-7xl mx-auto w-full">
+    <span>💾 Respaldo y Seguridad de Datos:</span>
+    <div class="space-x-3">
+      <button onclick="openExportModal()" class="text-[#b492cd] hover:underline cursor-pointer">📤 Copiar Código de Datos</button>
+      <button onclick="openImportModal()" class="text-[#5fa89b] hover:underline cursor-pointer">📥 Pegar / Restaurar Datos</button>
+    </div>
+  </div>
 
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 space-y-6">
@@ -270,12 +284,37 @@
 
   <!-- TOAST DE NOTIFICACIÓN -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 bg-[#3d2c3d] text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-black transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    ✨ ¡Guardado con éxito!
+    ✨ ¡Operación exitosa!
   </div>
 
-  <!-- SCRIPT DE LA APLICACIÓN CON ESCÁNER MAESTRO DE RESCATE -->
+  <!-- MODAL: EXPORTAR DATOS -->
+  <div id="modal-export" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl border border-[#ebd7e3]">
+      <h3 class="text-sm font-black text-stone-800 text-center">📤 Copiar tus datos de Fitness</h3>
+      <p class="text-[11px] text-stone-500 text-center">Copia este código y guárdalo o mándatelo:</p>
+      <textarea id="export-textarea" class="w-full h-32 bg-[#f7faf8] border border-[#ebd7e3] rounded-2xl p-2 text-[10px] font-mono text-stone-700 outline-none resize-none" readonly></textarea>
+      <div class="flex justify-between pt-2">
+        <button onclick="closeModal('modal-export')" class="px-4 py-1.5 bg-stone-100 rounded-xl text-xs font-bold text-stone-700 cursor-pointer">Cerrar</button>
+        <button onclick="copyExportText()" class="px-4 py-1.5 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">📋 Copiar al Portapapeles</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORTAR DATOS -->
+  <div id="modal-import" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl border border-[#ebd7e3]">
+      <h3 class="text-sm font-black text-stone-800 text-center">📥 Pegar tus datos de Fitness</h3>
+      <p class="text-[11px] text-stone-500 text-center">Pega aquí el código JSON con tus respaldos:</p>
+      <textarea id="import-textarea" placeholder="Pega el código aquí..." class="w-full h-32 bg-[#f7faf8] border border-[#ebd7e3] rounded-2xl p-2 text-[10px] font-mono text-stone-700 outline-none resize-none"></textarea>
+      <div class="flex justify-between pt-2">
+        <button onclick="closeModal('modal-import')" class="px-4 py-1.5 bg-stone-100 rounded-xl text-xs font-bold text-stone-700 cursor-pointer">Cancelar</button>
+        <button onclick="applyImportText()" class="px-4 py-1.5 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">✨ Restaurar Datos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT CON SISTEMA DE EXTRACCIÓN TOTAL DE LOCALSTORAGE -->
   <script>
-    // Configuración Firebase Firestore
     const firebaseConfig = {
       apiKey: "AIzaSyCnhvfyXpwJdYOQFCvsyHDhgW9F3X7ARR4",
       authDomain: "marpk-816dd.firebaseapp.com",
@@ -296,41 +335,30 @@
     let currentDate = new Date().toISOString().slice(0, 10);
     let calendarCurrentDate = new Date();
 
-    // Escáner Maestro de Rescate de Datos Anteriores
+    // EXTRACCIÓN TOTAL Y AGRESIVA DE CUALQUIER DATO PREVIO EN EL NAVEGADOR
     function loadDayData(date) {
       try {
-        // 1. Intentar la llave actual Pro
         let raw = localStorage.getItem(STORAGE_PREFIX + date);
         if (raw) return JSON.parse(raw);
 
-        // 2. Buscar en cualquier llave antigua de localStorage que contenga "FITNESS" o "V9"
+        // Barrer todo el localStorage para encontrar cualquier cosa que tenga comida, cardio o entreno
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
-          if (k && (k.includes('FITNESS') || k.includes('V9'))) {
+          if (k) {
             const val = localStorage.getItem(k);
-            if (val) {
+            if (val && (val.includes('food') || val.includes('cardio') || val.includes('workouts') || val.includes('Espagueti'))) {
               try {
                 const parsed = JSON.parse(val);
-                // Si la llave antigua tenía la estructura de días (days) o era un objeto directo del día
-                if (parsed && parsed.days && parsed.days[date]) {
-                  return parsed.days[date];
-                }
-                if (parsed && (parsed.food || parsed.cardio || parsed.workouts)) {
-                  // Si guardaba todo en un solo día general, lo adaptamos
-                  return parsed;
-                }
-              } catch(err) {}
+                if (parsed && parsed[date]) return parsed[date];
+                if (parsed && parsed.days && parsed.days[date]) return parsed.days[date];
+                if (parsed && (parsed.food || parsed.cardio || parsed.workouts)) return parsed;
+              } catch(e) {}
             }
           }
         }
       } catch(e) {}
 
-      return {
-        food: [],
-        cardio: [],
-        workouts: [],
-        goalsState: {}
-      };
+      return { food: [], cardio: [], workouts: [], goalsState: {} };
     }
 
     let currentDayData = loadDayData(currentDate);
@@ -342,14 +370,14 @@
 
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
-          if (k && k.includes('FITNESS')) {
+          if (k) {
             const val = localStorage.getItem(k);
-            try {
-              const parsed = JSON.parse(val);
-              if (parsed && (parsed.weights || parsed.vo2 || parsed.photos)) {
-                return parsed;
-              }
-            } catch(e) {}
+            if (val && (val.includes('weights') || val.includes('vo2') || val.includes('photos'))) {
+              try {
+                const parsed = JSON.parse(val);
+                if (parsed && (parsed.weights || parsed.photos)) return parsed;
+              } catch(e) {}
+            }
           }
         }
       } catch(e) {}
@@ -421,7 +449,59 @@
       renderPhotoGallery();
     }
 
-    // --- 1. METAS & SEGUIMIENTO SEMANAL LIMPIO ---
+    // Funciones de Copiar y Pegar Respaldo (Igual a Pixa)
+    function openExportModal() {
+      let allData = {};
+      for(let i=0; i<localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if(key) allData[key] = localStorage.getItem(key);
+      }
+      const txt = document.getElementById('export-textarea');
+      if(txt) {
+        txt.value = JSON.stringify(allData);
+        openModal('modal-export');
+      }
+    }
+
+    function copyExportText() {
+      const txt = document.getElementById('export-textarea');
+      if(txt) {
+        txt.select();
+        navigator.clipboard.writeText(txt.value).then(() => {
+          showToast("📋 ¡Copiado al portapapeles!");
+          closeModal('modal-export');
+        });
+      }
+    }
+
+    function openImportModal() {
+      const txt = document.getElementById('import-textarea');
+      if(txt) txt.value = '';
+      openModal('modal-import');
+    }
+
+    function applyImportText() {
+      const txt = document.getElementById('import-textarea');
+      if(!txt || !txt.value.trim()) return alert("Pega el código primero.");
+      try {
+        const parsed = JSON.parse(txt.value.trim());
+        for(let k in parsed) {
+          localStorage.setItem(k, parsed[k]);
+        }
+        currentDayData = loadDayData(currentDate);
+        globalData = loadGlobalData();
+        renderAllUI();
+        closeModal('modal-import');
+        showToast("✨ ¡Datos restaurados con éxito!");
+      } catch(e) {
+        alert("El código no es válido.");
+      }
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // --- 1. METAS & SEGUIMIENTO SEMANAL ---
     function renderGoals() {
       const container = document.getElementById('goals-container');
       container.innerHTML = '';
@@ -436,16 +516,16 @@
 
       baseGoals.forEach(g => {
         if(g.type === 'daily') {
-          let valToday = 0;
-          if(g.id === 'cal') valToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.cal||0),0);
-          if(g.id === 'prot') valToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.prot||0),0);
-          let isDone = g.id === 'cal' ? (valToday > 0 && valToday <= 1700) : (valToday >= 80);
+          let valToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.cal||0),0);
+          let protToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.prot||0),0);
+          let valToCheck = g.id === 'cal' ? valToday : protToday;
+          let isDone = g.id === 'cal' ? (valToCheck > 0 && valToCheck <= 1700) : (valToCheck >= 80);
           
           container.innerHTML += `
             <div class="glass-card rounded-2xl p-4 flex items-center justify-between text-xs">
               <div>
                 <span class="font-black text-stone-800">${g.title}</span>
-                <p class="text-[10px] text-stone-500 font-bold">Registrado hoy: ${valToday}</p>
+                <p class="text-[10px] text-stone-500 font-bold">Registrado hoy: ${valToCheck}</p>
               </div>
               <span class="px-3 py-1 rounded-xl font-black ${isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-500'}">${isDone ? '✓ Cumplido hoy' : 'Pendiente hoy'}</span>
             </div>`;
@@ -506,17 +586,17 @@
       container.innerHTML = '';
       
       let hasContent = false;
-      if(currentDayData.food.length > 0) {
+      if(currentDayData.food && currentDayData.food.length > 0) {
         hasContent = true;
         container.innerHTML += `<p class="font-bold text-stone-700">🥗 Alimentos (${currentDayData.food.length} items registrados)</p>`;
       }
-      if(currentDayData.cardio.length > 0) {
+      if(currentDayData.cardio && currentDayData.cardio.length > 0) {
         hasContent = true;
         currentDayData.cardio.forEach(c => {
           container.innerHTML += `<p class="font-bold text-emerald-700">🏃‍♀️ Cardio (${c.type}): ${c.min} min | ${c.km || 0} km | ${c.kcal} kcal</p>`;
         });
       }
-      if(currentDayData.workouts.length > 0) {
+      if(currentDayData.workouts && currentDayData.workouts.length > 0) {
         hasContent = true;
         currentDayData.workouts.forEach(w => {
           container.innerHTML += `<p class="font-bold text-purple-700">🏋️‍♀️ Entreno (${w.name}): ${w.min} min | ${w.kcal} kcal | Ejercicios: ${w.exercises}</p>`;
@@ -536,6 +616,7 @@
       const fat = document.getElementById('food-fat').value;
 
       if(!name) return alert("Ingresa el nombre del alimento");
+      if(!currentDayData.food) currentDayData.food = [];
       currentDayData.food.push({ id: Date.now(), name, cal, prot, carb, fat });
       saveAllData();
       renderAllUI();
@@ -551,6 +632,7 @@
       const search = (document.getElementById('food-search').value || '').toLowerCase();
       container.innerHTML = '';
 
+      if(!currentDayData.food) currentDayData.food = [];
       let filtered = currentDayData.food.filter(f => f.name.toLowerCase().includes(search));
       if(filtered.length === 0) {
         container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No se encontraron alimentos.</p>`;
@@ -584,6 +666,7 @@
       const pace = document.getElementById('cardio-pace').value;
 
       if(!min) return alert("Ingresa los minutos de cardio");
+      if(!currentDayData.cardio) currentDayData.cardio = [];
       currentDayData.cardio.push({ id: Date.now(), type, min, km, kcal, pace });
       saveAllData();
       renderAllUI();
@@ -605,12 +688,11 @@
 
       for(let i=0; i<localStorage.length; i++) {
         const k = localStorage.key(i);
-        if(k && k.includes('FITNESS')) {
+        if(k) {
           try {
             const data = JSON.parse(localStorage.getItem(k));
-            if(data.cardio) {
-              const dateStr = k.split('_').pop().match(/^\d{4}-\d{2}-\d{2}$/) ? k.split('_').pop() : currentDate;
-              data.cardio.forEach(c => allCardio.push({ ...c, date: dateStr }));
+            if(data && data.cardio && Array.isArray(data.cardio)) {
+              data.cardio.forEach(c => allCardio.push({ ...c, date: currentDate }));
             }
           } catch(e) {}
         }
@@ -658,6 +740,7 @@
       const notes = document.getElementById('workout-notes').value;
 
       if(!name) return alert("Ingresa el nombre del entreno");
+      if(!currentDayData.workouts) currentDayData.workouts = [];
       currentDayData.workouts.push({ id: Date.now(), name, min, kcal, exercises, notes });
       saveAllData();
       renderAllUI();
@@ -676,12 +759,11 @@
       let allWorkouts = [];
       for(let i=0; i<localStorage.length; i++) {
         const k = localStorage.key(i);
-        if(k && k.includes('FITNESS')) {
+        if(k) {
           try {
             const data = JSON.parse(localStorage.getItem(k));
-            if(data.workouts) {
-              const dateStr = k.split('_').pop().match(/^\d{4}-\d{2}-\d{2}$/) ? k.split('_').pop() : currentDate;
-              data.workouts.forEach(w => allWorkouts.push({ ...w, date: dateStr }));
+            if(data && data.workouts && Array.isArray(data.workouts)) {
+              data.workouts.forEach(w => allWorkouts.push({ ...w, date: currentDate }));
             }
           } catch(e) {}
         }
