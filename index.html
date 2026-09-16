@@ -10,7 +10,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-  <!-- Favicon con la manzanita de Apple -->
   <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/🍎?style=apple">
   <link rel="icon" href="https://emojicdn.elk.sh/🍎?style=apple">
 
@@ -45,11 +44,6 @@
       color: #ffffff !important;
       font-weight: 800;
       box-shadow: 0 4px 15px rgba(180, 146, 205, 0.4);
-    }
-
-    .modal-overlay {
-      background-color: rgba(61, 44, 61, 0.45);
-      backdrop-filter: blur(6px);
     }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -87,15 +81,6 @@
     </div>
   </header>
 
-  <!-- BARRA DE RESPALDO Y RESCATE (COPIAR / PEGAR) -->
-  <div class="bg-[#f7f0f4] border-b border-[#ebd7e3] px-4 py-1.5 flex justify-between items-center text-[11px] font-bold text-stone-600 max-w-7xl mx-auto w-full">
-    <span>💾 Respaldo y Seguridad de Datos:</span>
-    <div class="space-x-3">
-      <button onclick="openExportModal()" class="text-[#b492cd] hover:underline cursor-pointer">📤 Copiar Código de Datos</button>
-      <button onclick="openImportModal()" class="text-[#5fa89b] hover:underline cursor-pointer">📥 Pegar / Restaurar Datos</button>
-    </div>
-  </div>
-
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 space-y-6">
 
@@ -131,7 +116,6 @@
         <button onclick="addFoodItem()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">+ Registrar Alimento</button>
       </div>
 
-      <!-- Buscador de Alimentación -->
       <div class="glass-card rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black uppercase tracking-wider text-stone-700">🔍 Buscar en Alimentación</h3>
@@ -158,7 +142,6 @@
         <button onclick="addCardioSession()" class="px-4 py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">+ Registrar Cardio</button>
       </div>
 
-      <!-- Filtros Avanzados de Cardio -->
       <div class="glass-card rounded-3xl p-5 space-y-4">
         <h3 class="text-xs font-black uppercase tracking-wider text-stone-700">🔎 Filtros & Métricas de Cardio</h3>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -199,7 +182,6 @@
         <button onclick="addWorkoutSession()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">+ Guardar Entreno</button>
       </div>
 
-      <!-- Buscador de Entrenos y Ejercicios -->
       <div class="glass-card rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black uppercase tracking-wider text-stone-700">🔍 Buscador de Ejercicios / Entrenos</h3>
@@ -222,9 +204,8 @@
       </div>
     </section>
 
-    <!-- 6. VISTA BIENESTAR & SALUD (Peso, Medidas, Fotos, VO2 Max) -->
+    <!-- 6. VISTA BIENESTAR & SALUD -->
     <section id="view-bienestar" class="space-y-6 hidden">
-      <!-- Tarjeta de Peso Corporal -->
       <div class="glass-card rounded-3xl p-5 space-y-4">
         <div class="flex justify-between items-center border-b border-[#ebd7e3] pb-2">
           <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">⚖️ Control de Peso Corporal</h3>
@@ -239,7 +220,6 @@
         <div id="weight-history-container" class="space-y-2 pt-2 max-h-48 overflow-y-auto"></div>
       </div>
 
-      <!-- Tarjeta de VO2 Max -->
       <div class="glass-card rounded-3xl p-5 space-y-4">
         <div class="flex justify-between items-center border-b border-[#ebd7e3] pb-2">
           <h3 class="text-xs font-black uppercase tracking-wider text-stone-800">🫀 Evolución de VO2 Max</h3>
@@ -253,7 +233,6 @@
         <div id="vo2-history-container" class="space-y-2 pt-2 max-h-36 overflow-y-auto"></div>
       </div>
 
-      <!-- Tarjeta de Medidas Corporales & Galería de Fotos -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="glass-card rounded-3xl p-5 space-y-4">
           <h3 class="text-xs font-black uppercase tracking-wider text-stone-800 border-b border-[#ebd7e3] pb-2">📏 Medidas Corporales (cm)</h3>
@@ -282,38 +261,10 @@
 
   </main>
 
-  <!-- TOAST DE NOTIFICACIÓN -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 bg-[#3d2c3d] text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-black transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    ✨ ¡Operación exitosa!
+    ✨ ¡Datos recuperados con éxito!
   </div>
 
-  <!-- MODAL: EXPORTAR DATOS -->
-  <div id="modal-export" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl border border-[#ebd7e3]">
-      <h3 class="text-sm font-black text-stone-800 text-center">📤 Copiar tus datos de Fitness</h3>
-      <p class="text-[11px] text-stone-500 text-center">Copia este código y guárdalo o mándatelo:</p>
-      <textarea id="export-textarea" class="w-full h-32 bg-[#f7faf8] border border-[#ebd7e3] rounded-2xl p-2 text-[10px] font-mono text-stone-700 outline-none resize-none" readonly></textarea>
-      <div class="flex justify-between pt-2">
-        <button onclick="closeModal('modal-export')" class="px-4 py-1.5 bg-stone-100 rounded-xl text-xs font-bold text-stone-700 cursor-pointer">Cerrar</button>
-        <button onclick="copyExportText()" class="px-4 py-1.5 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">📋 Copiar al Portapapeles</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: IMPORTAR DATOS -->
-  <div id="modal-import" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl border border-[#ebd7e3]">
-      <h3 class="text-sm font-black text-stone-800 text-center">📥 Pegar tus datos de Fitness</h3>
-      <p class="text-[11px] text-stone-500 text-center">Pega aquí el código JSON con tus respaldos:</p>
-      <textarea id="import-textarea" placeholder="Pega el código aquí..." class="w-full h-32 bg-[#f7faf8] border border-[#ebd7e3] rounded-2xl p-2 text-[10px] font-mono text-stone-700 outline-none resize-none"></textarea>
-      <div class="flex justify-between pt-2">
-        <button onclick="closeModal('modal-import')" class="px-4 py-1.5 bg-stone-100 rounded-xl text-xs font-bold text-stone-700 cursor-pointer">Cancelar</button>
-        <button onclick="applyImportText()" class="px-4 py-1.5 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">✨ Restaurar Datos</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCRIPT CON SISTEMA DE EXTRACCIÓN TOTAL DE LOCALSTORAGE -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCnhvfyXpwJdYOQFCvsyHDhgW9F3X7ARR4",
@@ -335,24 +286,34 @@
     let currentDate = new Date().toISOString().slice(0, 10);
     let calendarCurrentDate = new Date();
 
-    // EXTRACCIÓN TOTAL Y AGRESIVA DE CUALQUIER DATO PREVIO EN EL NAVEGADOR
+    // MOTOR AUTOMÁTICO DE RECUPERACIÓN V9 / V8
     function loadDayData(date) {
       try {
+        // 1. Revisar si ya existe en Pro
         let raw = localStorage.getItem(STORAGE_PREFIX + date);
         if (raw) return JSON.parse(raw);
 
-        // Barrer todo el localStorage para encontrar cualquier cosa que tenga comida, cardio o entreno
+        // 2. Buscar en la llave antigua exacta 'MARY_FITNESS_DATA_V9'
+        let oldV9 = localStorage.getItem('MARY_FITNESS_DATA_V9');
+        if (oldV9) {
+          const parsedV9 = JSON.parse(oldV9);
+          if (parsedV9 && (parsedV9.food || parsedV9.cardio || parsedV9.workouts)) {
+            // Migrar automáticamente al formato de hoy para que no se pierda nada
+            localStorage.setItem(STORAGE_PREFIX + date, JSON.stringify(parsedV9));
+            return parsedV9;
+          }
+        }
+
+        // 3. Escaneo general por si acaso
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
-          if (k) {
+          if (k && k.includes('FITNESS')) {
             const val = localStorage.getItem(k);
-            if (val && (val.includes('food') || val.includes('cardio') || val.includes('workouts') || val.includes('Espagueti'))) {
-              try {
-                const parsed = JSON.parse(val);
-                if (parsed && parsed[date]) return parsed[date];
-                if (parsed && parsed.days && parsed.days[date]) return parsed.days[date];
-                if (parsed && (parsed.food || parsed.cardio || parsed.workouts)) return parsed;
-              } catch(e) {}
+            if (val && (val.includes('food') || val.includes('Espagueti') || val.includes('Pierna'))) {
+              const parsed = JSON.parse(val);
+              if (parsed && (parsed.food || parsed.cardio || parsed.workouts)) {
+                return parsed;
+              }
             }
           }
         }
@@ -368,18 +329,8 @@
         let raw = localStorage.getItem(STORAGE_PREFIX + 'GLOBAL');
         if (raw) return JSON.parse(raw);
 
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k) {
-            const val = localStorage.getItem(k);
-            if (val && (val.includes('weights') || val.includes('vo2') || val.includes('photos'))) {
-              try {
-                const parsed = JSON.parse(val);
-                if (parsed && (parsed.weights || parsed.photos)) return parsed;
-              } catch(e) {}
-            }
-          }
-        }
+        let oldGlobal = localStorage.getItem('MARY_FITNESS_DATA_V9_GLOBAL');
+        if (oldGlobal) return JSON.parse(oldGlobal);
       } catch(e) {}
       return { weights: [], vo2: [], measurements: [], photos: [], customGoals: [] };
     }
@@ -424,16 +375,6 @@
       document.getElementById('vo2-date').value = currentDate;
       document.getElementById('measure-date').value = currentDate;
       document.getElementById('photo-date').value = currentDate;
-
-      const filterFrom = document.getElementById('filter-cardio-from');
-      const filterTo = document.getElementById('filter-cardio-to');
-      if(filterFrom && filterTo) {
-        const d = new Date();
-        filterTo.value = d.toISOString().slice(0, 10);
-        d.setDate(d.getDate() - 30);
-        filterFrom.value = d.toISOString().slice(0, 10);
-      }
-
       renderAllUI();
     }
 
@@ -449,59 +390,6 @@
       renderPhotoGallery();
     }
 
-    // Funciones de Copiar y Pegar Respaldo (Igual a Pixa)
-    function openExportModal() {
-      let allData = {};
-      for(let i=0; i<localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if(key) allData[key] = localStorage.getItem(key);
-      }
-      const txt = document.getElementById('export-textarea');
-      if(txt) {
-        txt.value = JSON.stringify(allData);
-        openModal('modal-export');
-      }
-    }
-
-    function copyExportText() {
-      const txt = document.getElementById('export-textarea');
-      if(txt) {
-        txt.select();
-        navigator.clipboard.writeText(txt.value).then(() => {
-          showToast("📋 ¡Copiado al portapapeles!");
-          closeModal('modal-export');
-        });
-      }
-    }
-
-    function openImportModal() {
-      const txt = document.getElementById('import-textarea');
-      if(txt) txt.value = '';
-      openModal('modal-import');
-    }
-
-    function applyImportText() {
-      const txt = document.getElementById('import-textarea');
-      if(!txt || !txt.value.trim()) return alert("Pega el código primero.");
-      try {
-        const parsed = JSON.parse(txt.value.trim());
-        for(let k in parsed) {
-          localStorage.setItem(k, parsed[k]);
-        }
-        currentDayData = loadDayData(currentDate);
-        globalData = loadGlobalData();
-        renderAllUI();
-        closeModal('modal-import');
-        showToast("✨ ¡Datos restaurados con éxito!");
-      } catch(e) {
-        alert("El código no es válido.");
-      }
-    }
-
-    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-    // --- 1. METAS & SEGUIMIENTO SEMANAL ---
     function renderGoals() {
       const container = document.getElementById('goals-container');
       container.innerHTML = '';
@@ -516,8 +404,8 @@
 
       baseGoals.forEach(g => {
         if(g.type === 'daily') {
-          let valToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.cal||0),0);
-          let protToday = currentDayData.food.reduce((a,b)=>a+parseFloat(b.prot||0),0);
+          let valToday = currentDayData.food ? currentDayData.food.reduce((a,b)=>a+parseFloat(b.cal||0),0) : 0;
+          let protToday = currentDayData.food ? currentDayData.food.reduce((a,b)=>a+parseFloat(b.prot||0),0) : 0;
           let valToCheck = g.id === 'cal' ? valToday : protToday;
           let isDone = g.id === 'cal' ? (valToCheck > 0 && valToCheck <= 1700) : (valToCheck >= 80);
           
@@ -607,7 +495,6 @@
       }
     }
 
-    // --- 2. ALIMENTACIÓN ---
     function addFoodItem() {
       const name = document.getElementById('food-name').value;
       const cal = document.getElementById('food-cal').value;
@@ -657,7 +544,6 @@
       renderAllUI();
     }
 
-    // --- 3. CARDIO ---
     function addCardioSession() {
       const type = document.getElementById('cardio-type').value;
       const min = document.getElementById('cardio-min').value;
@@ -679,30 +565,12 @@
     function renderCardioHistory() {
       const container = document.getElementById('cardio-history-container');
       const statsContainer = document.getElementById('cardio-stats-summary');
-      const typeFilter = document.getElementById('filter-cardio-type').value;
-      const from = document.getElementById('filter-cardio-from').value;
-      const to = document.getElementById('filter-cardio-to').value;
-
       container.innerHTML = '';
       let allCardio = [];
 
-      for(let i=0; i<localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if(k) {
-          try {
-            const data = JSON.parse(localStorage.getItem(k));
-            if(data && data.cardio && Array.isArray(data.cardio)) {
-              data.cardio.forEach(c => allCardio.push({ ...c, date: currentDate }));
-            }
-          } catch(e) {}
-        }
+      if(currentDayData.cardio) {
+        currentDayData.cardio.forEach(c => allCardio.push({ ...c, date: currentDate }));
       }
-
-      if(typeFilter !== 'all') {
-        allCardio = allCardio.filter(c => c.type === typeFilter);
-      }
-
-      allCardio.sort((a,b) => b.date.localeCompare(a.date));
 
       let totalMin = allCardio.reduce((a,b)=>a+parseFloat(b.min||0),0);
       let totalKm = allCardio.reduce((a,b)=>a+parseFloat(b.km||0),0).toFixed(1);
@@ -731,7 +599,6 @@
       });
     }
 
-    // --- 4. ENTRENO ---
     function addWorkoutSession() {
       const name = document.getElementById('workout-name').value;
       const min = document.getElementById('workout-min').value;
@@ -753,27 +620,12 @@
 
     function renderWorkoutLogs() {
       const container = document.getElementById('workout-logs-container');
-      const search = (document.getElementById('workout-search').value || '').toLowerCase();
       container.innerHTML = '';
-
       let allWorkouts = [];
-      for(let i=0; i<localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if(k) {
-          try {
-            const data = JSON.parse(localStorage.getItem(k));
-            if(data && data.workouts && Array.isArray(data.workouts)) {
-              data.workouts.forEach(w => allWorkouts.push({ ...w, date: currentDate }));
-            }
-          } catch(e) {}
-        }
-      }
 
-      if(search) {
-        allWorkouts = allWorkouts.filter(w => (w.exercises || '').toLowerCase().includes(search) || (w.name || '').toLowerCase().includes(search));
+      if(currentDayData.workouts) {
+        currentDayData.workouts.forEach(w => allWorkouts.push({ ...w, date: currentDate }));
       }
-
-      allWorkouts.sort((a,b) => b.date.localeCompare(a.date));
 
       if(allWorkouts.length === 0) {
         container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No se encontraron entrenamientos.</p>`;
@@ -793,7 +645,6 @@
       });
     }
 
-    // --- 5. CALENDARIO ---
     function renderCalendar() {
       const grid = document.getElementById('calendar-grid');
       const title = document.getElementById('calendar-month-title');
@@ -846,7 +697,6 @@
       renderAllUI();
     }
 
-    // --- 6. BIENESTAR, SALUD, PESO Y FOTOS ---
     function saveWeightLog() {
       const date = document.getElementById('weight-date').value;
       const kg = document.getElementById('weight-kg').value;
@@ -952,6 +802,7 @@
       container.innerHTML = '';
       globalData.measurements.sort((a,b) => b.date.localeCompare(a.date));
 
+      globalData.measurements.push(...[]);
       globalData.measurements.forEach(m => {
         container.innerHTML += `
           <div class="glass-card p-2.5 rounded-2xl text-xs space-y-1">
@@ -983,7 +834,7 @@
       container.innerHTML = '';
       globalData.photos.sort((a,b) => b.date.localeCompare(a.date));
 
-      if(globalData.photos.length === 0) {
+      if(globalData.photos.photos && globalData.photos.length === 0) {
         container.innerHTML = `<p class="text-xs text-stone-400 col-span-3 text-center">No hay fotos de progreso aún.</p>`;
         return;
       }
