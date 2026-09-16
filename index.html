@@ -273,7 +273,7 @@
     ✨ ¡Guardado con éxito!
   </div>
 
-  <!-- SCRIPT DE LA APLICACIÓN CON SISTEMA DE RESCATE DE DATOS -->
+  <!-- SCRIPT DE LA APLICACIÓN CON ESCÁNER MAESTRO DE RESCATE -->
   <script>
     // Configuración Firebase Firestore
     const firebaseConfig = {
@@ -296,21 +296,31 @@
     let currentDate = new Date().toISOString().slice(0, 10);
     let calendarCurrentDate = new Date();
 
-    // Sistema de rescate inteligente de datos anteriores
+    // Escáner Maestro de Rescate de Datos Anteriores
     function loadDayData(date) {
       try {
-        // 1. Intentar la llave actual
+        // 1. Intentar la llave actual Pro
         let raw = localStorage.getItem(STORAGE_PREFIX + date);
         if (raw) return JSON.parse(raw);
 
-        // 2. Buscar en llaves anteriores (V9, V8, etc.) para recuperar lo que ya tenías
-        const oldPrefixes = ['MARY_FITNESS_DATA_V9_', 'MARY_FITNESS_DATA_', 'MARY_FITNESS_'];
-        for (let prefix of oldPrefixes) {
-          raw = localStorage.getItem(prefix + date);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            localStorage.setItem(STORAGE_PREFIX + date, JSON.stringify(parsed));
-            return parsed;
+        // 2. Buscar en cualquier llave antigua de localStorage que contenga "FITNESS" o "V9"
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && (k.includes('FITNESS') || k.includes('V9'))) {
+            const val = localStorage.getItem(k);
+            if (val) {
+              try {
+                const parsed = JSON.parse(val);
+                // Si la llave antigua tenía la estructura de días (days) o era un objeto directo del día
+                if (parsed && parsed.days && parsed.days[date]) {
+                  return parsed.days[date];
+                }
+                if (parsed && (parsed.food || parsed.cardio || parsed.workouts)) {
+                  // Si guardaba todo en un solo día general, lo adaptamos
+                  return parsed;
+                }
+              } catch(err) {}
+            }
           }
         }
       } catch(e) {}
@@ -330,13 +340,16 @@
         let raw = localStorage.getItem(STORAGE_PREFIX + 'GLOBAL');
         if (raw) return JSON.parse(raw);
 
-        const oldGlobalKeys = ['MARY_FITNESS_DATA_V9_GLOBAL', 'MARY_FITNESS_GLOBAL'];
-        for (let k of oldGlobalKeys) {
-          raw = localStorage.getItem(k);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            localStorage.setItem(STORAGE_PREFIX + 'GLOBAL', JSON.stringify(parsed));
-            return parsed;
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.includes('FITNESS')) {
+            const val = localStorage.getItem(k);
+            try {
+              const parsed = JSON.parse(val);
+              if (parsed && (parsed.weights || parsed.vo2 || parsed.photos)) {
+                return parsed;
+              }
+            } catch(e) {}
           }
         }
       } catch(e) {}
@@ -345,7 +358,7 @@
     let globalData = loadGlobalData();
 
     function saveAllData() {
-      localStorage.setItem(getStorageKey(currentDate), JSON.stringify(currentDayData));
+      localStorage.setItem(STORAGE_PREFIX + currentDate, JSON.stringify(currentDayData));
       localStorage.setItem(STORAGE_PREFIX + 'GLOBAL', JSON.stringify(globalData));
       if (db) {
         db.collection('mary_fitness').doc(currentDate).set(currentDayData).catch(err => {});
@@ -353,8 +366,6 @@
       }
       showToast("💾 ¡Datos guardados correctamente!");
     }
-
-    function getStorageKey(date) { return STORAGE_PREFIX + date; }
 
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -594,18 +605,14 @@
 
       for(let i=0; i<localStorage.length; i++) {
         const k = localStorage.key(i);
-        if(k && k.includes('FITNESS') && !k.endsWith('GLOBAL')) {
-          const dateStr = k.split('_').pop();
-          if(dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            if(from && dateStr < from) continue;
-            if(to && dateStr > to) continue;
-            try {
-              const data = JSON.parse(localStorage.getItem(k));
-              if(data.cardio) {
-                data.cardio.forEach(c => allCardio.push({ ...c, date: dateStr }));
-              }
-            } catch(e) {}
-          }
+        if(k && k.includes('FITNESS')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(k));
+            if(data.cardio) {
+              const dateStr = k.split('_').pop().match(/^\d{4}-\d{2}-\d{2}$/) ? k.split('_').pop() : currentDate;
+              data.cardio.forEach(c => allCardio.push({ ...c, date: dateStr }));
+            }
+          } catch(e) {}
         }
       }
 
@@ -627,7 +634,7 @@
       `;
 
       if(allCardio.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No hay sesiones de cardio en este rango.</p>`;
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No hay sesiones de cardio registradas.</p>`;
         return;
       }
 
@@ -669,16 +676,14 @@
       let allWorkouts = [];
       for(let i=0; i<localStorage.length; i++) {
         const k = localStorage.key(i);
-        if(k && k.includes('FITNESS') && !k.endsWith('GLOBAL')) {
-          const dateStr = k.split('_').pop();
-          if(dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            try {
-              const data = JSON.parse(localStorage.getItem(k));
-              if(data.workouts) {
-                data.workouts.forEach(w => allWorkouts.push({ ...w, date: dateStr }));
-              }
-            } catch(e) {}
-          }
+        if(k && k.includes('FITNESS')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(k));
+            if(data.workouts) {
+              const dateStr = k.split('_').pop().match(/^\d{4}-\d{2}-\d{2}$/) ? k.split('_').pop() : currentDate;
+              data.workouts.forEach(w => allWorkouts.push({ ...w, date: dateStr }));
+            }
+          } catch(e) {}
         }
       }
 
