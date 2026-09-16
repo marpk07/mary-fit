@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -237,14 +238,16 @@
         <button onclick="closeModal('modal-meta-custom')" class="text-stone-400 font-bold cursor-pointer">✕</button>
       </div>
       <div class="space-y-3 text-xs">
-        <div><label class="font-bold text-stone-600 block mb-1">Título de la Meta</label><input type="text" id="gm-title" placeholder="Ej. Proteína Diaria" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div><label class="font-bold text-stone-600 block mb-1">Título de la Meta</label><input type="text" id="gm-title" placeholder="Ej. Sesiones de Cardio Zona 2" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold text-stone-600 block mb-1">Tipo de Métrica</label>
             <select id="gm-type" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800">
               <option value="prot">🥩 Proteína (g)</option>
               <option value="cal">🔥 Calorías (kcal)</option>
-              <option value="cardio_min">🏃‍♀️ Cardio (min)</option>
+              <option value="cardio_sesiones">🏃‍♀️ Sesiones de Cardio (General)</option>
+              <option value="cardio_z2">🏃‍♀️ Cardio Zona 2 (Sesiones)</option>
+              <option value="cardio_hiit">🏃‍♀️ Cardio Intenso (Sesiones)</option>
               <option value="agua">💧 Agua (L)</option>
               <option value="entreno">💪 Sesiones de Fuerza</option>
             </select>
@@ -252,12 +255,12 @@
           <div>
             <label class="font-bold text-stone-600 block mb-1">Frecuencia</label>
             <select id="gm-freq" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800">
-              <option value="Diaria">Diaria</option>
               <option value="Semanal">Semanal</option>
+              <option value="Diaria">Diaria</option>
             </select>
           </div>
         </div>
-        <div><label class="font-bold text-stone-600 block mb-1">Valor Objetivo (Mínimo)</label><input type="number" step="0.1" id="gm-target" placeholder="130" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div><label class="font-bold text-stone-600 block mb-1">Valor Objetivo (Veces / Veces por semana)</label><input type="number" step="1" id="gm-target" placeholder="4" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
       </div>
       <div class="pt-2 flex justify-end space-x-2">
         <button onclick="closeModal('modal-meta-custom')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
@@ -342,6 +345,8 @@
         <div>
           <label class="font-bold text-stone-600 block mb-1">Lugar / Tipo</label>
           <select id="cardio-lugar" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800">
+            <option value="Zona 2 (Cinta/Suave)">Zona 2 (Cinta/Suave)</option>
+            <option value="Intenso (HIIT/Running)">Intenso (HIIT/Running)</option>
             <option value="Cinta en Gimnasio">Cinta en Gimnasio</option>
             <option value="Exterior / Running">Exterior / Running</option>
             <option value="Bicicleta">Bicicleta</option>
@@ -924,7 +929,6 @@
       list.forEach(al => {
         tCal += al.cal; tProt += al.prot; tCarb += al.carb; tFat += al.fat;
         
-        // Ajuste solicitado: Eliminadas las etiquetas de "Déficit Excedido" o "Meta Cumplida" por cada alimento individual.
         container.innerHTML += `
           <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
             <div>
@@ -1130,6 +1134,7 @@
       }
 
       const today = new Date();
+      const todayStr = today.toISOString().slice(0, 10);
       const weekDays = [];
       for (let i = 6; i >= 0; i--) {
         const d = new Date(today);
@@ -1151,17 +1156,29 @@
           let totalCount = 0;
           if (g.metricType === 'entreno') {
             totalCount = maryData.entrenamiento.filter(x => weekDays.some(w => w.dateStr === x.date)).length;
-          } else if (g.metricType === 'cardio_min') {
-            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date)).reduce((a,b)=>a+b.min,0);
+          } else if (g.metricType === 'cardio_sesiones') {
+            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date)).length;
+          } else if (g.metricType === 'cardio_z2') {
+            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date) && (x.lugar || '').toLowerCase().includes('zona 2')).length;
+          } else if (g.metricType === 'cardio_hiit') {
+            totalCount = maryData.cardio.filter(x => weekDays.some(w => w.dateStr === x.date) && (x.lugar || '').toLowerCase().includes('intenso')).length;
           }
+
           const fulfilled = totalCount >= g.targetValue;
+          const isWeekEnded = weekDays[weekDays.length - 1].dateStr < todayStr;
+
+          let badgeHtml = '';
+          if (fulfilled) {
+            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-800 font-black text-xs">🎉 ¡Completado (${totalCount}/${g.targetValue})!</div>`;
+          } else if (!isWeekEnded) {
+            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-purple-100 border border-purple-300 text-purple-800 font-bold text-xs">En curso (${totalCount}/${g.targetValue})</div>`;
+          } else {
+            badgeHtml = `<div class="px-3 py-1 rounded-xl bg-red-500/10 border border-red-400 text-red-600 font-bold text-xs">No cumplida (${totalCount}/${g.targetValue})</div>`;
+          }
 
           trackerDaysHtml = `
             <div class="flex items-center gap-2">
-              <span class="text-xs font-bold text-stone-600">Progreso semanal: ${totalCount} / ${g.targetValue}</span>
-              <div class="w-8 h-8 rounded-xl border flex items-center justify-center text-sm ${fulfilled ? 'bg-emerald-500/20 border-emerald-500 text-emerald-800 font-black' : 'bg-red-500/10 border-red-400 text-red-600 font-black'}">
-                ${fulfilled ? '✓' : '✗'}
-              </div>
+              ${badgeHtml}
             </div>`;
         } else {
           weekDays.forEach(w => {
@@ -1184,7 +1201,7 @@
             if (status === 'ok') {
               boxClass = 'bg-emerald-500/20 border-emerald-500/60 text-emerald-800 font-black';
               symbol = '✓';
-            } else if (status === 'fail') {
+            } else if (status === 'fail' && w.dateStr <= todayStr) {
               boxClass = 'bg-red-500/20 border-red-500/60 text-red-600 font-black';
               symbol = '✗';
             }
@@ -1336,4 +1353,3 @@
   </script>
 </body>
 </html>
-
