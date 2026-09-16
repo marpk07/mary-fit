@@ -6,23 +6,15 @@
   <title>MARY · Fitness & Performance Suite</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-  <!-- Icono personalizado para iPhone (Manzanita con fondo lila) -->
- <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/🍎?style=apple">
+  <link rel="apple-touch-icon" href="https://emojicdn.elk.sh/🍎?style=apple">
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
-    :root {
-      --font-main: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    * { box-sizing: border-box; font-family: var(--font-main); }
+    * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
     
     body {
       background: 
@@ -33,7 +25,6 @@
       min-height: 100vh;
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
       background-attachment: fixed;
     }
 
@@ -45,7 +36,6 @@
     .glass-card {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(164, 219, 208, 0.6);
       box-shadow: 0 15px 35px rgba(60, 90, 80, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
@@ -65,7 +55,7 @@
       background: linear-gradient(135deg, #5fa89b 0%, #4a8c80) !important;
       color: #ffffff !important;
       font-weight: 800;
-      box-shadow: 0 6px 20px rgba(95, 168, 155, 0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+      box-shadow: 0 6px 20px rgba(95, 168, 155, 0.4);
     }
 
     .modal-overlay {
@@ -73,11 +63,9 @@
       backdrop-filter: blur(6px);
       z-index: 99999 !important;
     }
-
-    input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-[#a4dbd0] selection:text-[#2c3e35]">
+<body class="min-h-screen flex flex-col antialiased">
 
   <!-- HEADER -->
   <header class="glass-card-solid sticky top-0 z-40 border-b border-[#c8e3dc]">
@@ -91,16 +79,16 @@
       </div>
 
       <nav class="flex flex-wrap items-center justify-center gap-1.5 bg-[#eaf4f1] p-1.5 rounded-2xl border border-[#c8e3dc]">
-        <button onclick="switchTab('resumen')" id="tab-btn-resumen" class="nav-btn active px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">📊 Resumen</button>
-        <button onclick="switchTab('alimentacion')" id="tab-btn-alimentacion" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">🥗 Alimentación</button>
-        <button onclick="switchTab('cardio')" id="tab-btn-cardio" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">🏃‍♀️ Cardio</button>
-        <button onclick="switchTab('entrenamiento')" id="tab-btn-entrenamiento" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">💪 Entreno</button>
-        <button onclick="switchTab('calendario')" id="tab-btn-calendario" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">🗓️ Calendario</button>
-        <button onclick="switchTab('salud')" id="tab-btn-salud" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600 hover:text-stone-900">🍎 Bienestar</button>
+        <button onclick="switchTab('resumen')" id="tab-btn-resumen" class="nav-btn active px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">📊 Resumen</button>
+        <button onclick="switchTab('alimentacion')" id="tab-btn-alimentacion" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🥗 Alimentación</button>
+        <button onclick="switchTab('cardio')" id="tab-btn-cardio" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🏃‍♀️ Cardio</button>
+        <button onclick="switchTab('entrenamiento')" id="tab-btn-entrenamiento" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">💪 Entreno</button>
+        <button onclick="switchTab('calendario')" id="tab-btn-calendario" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🗓️ Calendario</button>
+        <button onclick="switchTab('salud')" id="tab-btn-salud" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🍎 Bienestar</button>
       </nav>
 
       <div class="flex items-center space-x-2">
-        <span id="cloud-badge" class="text-[9px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">☁️ Sincronizado</span>
+        <span class="text-[9px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">☁️ Sincronizado</span>
       </div>
     </div>
   </header>
@@ -110,7 +98,7 @@
 
     <div class="glass-card rounded-3xl p-4 flex flex-wrap items-center justify-between gap-3">
       <span class="text-xs font-black uppercase text-stone-700 tracking-wider">⚡ Panel de Control Activo</span>
-      <button onclick="openModalMetas()" class="px-4 py-2 bg-[#b492cd] hover:opacity-90 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer">⚙️ Configurar Metas Base</button>
+      <button onclick="openModalMetas()" class="px-4 py-2 bg-[#b492cd] text-white font-extrabold text-xs rounded-xl shadow-md cursor-pointer">⚙️ Configurar Metas Base</button>
     </div>
 
     <!-- PESTAÑA 1: RESUMEN GENERAL -->
@@ -126,7 +114,7 @@
             <input type="date" id="res-from" onchange="renderResumenRange()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 text-xs font-bold">
             <span class="text-xs font-bold text-stone-600">Hasta:</span>
             <input type="date" id="res-to" onchange="renderResumenRange()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 text-xs font-bold">
-            <button onclick="copyWhatsAppReport()" class="px-3 py-1.5 bg-[#5fa89b] text-white font-black text-xs rounded-xl shadow-sm hover:opacity-90 cursor-pointer">📋 Copiar WhatsApp</button>
+            <button onclick="copyWhatsAppReport()" class="px-3 py-1.5 bg-[#5fa89b] text-white font-black text-xs rounded-xl shadow-sm cursor-pointer">📋 Copiar WhatsApp</button>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="resumen-range-kpis"></div>
@@ -241,7 +229,7 @@
 
   </main>
 
-  <!-- MODAL NUEVA META FLEXIBLE -->
+  <!-- MODALES -->
   <div id="modal-meta-custom" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-md w-full p-6 space-y-4 border border-[#c8e3dc]">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -278,7 +266,6 @@
     </div>
   </div>
 
-  <!-- MODAL METAS BASE -->
   <div id="modal-metas" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -306,7 +293,6 @@
     </div>
   </div>
 
-  <!-- MODAL ALIMENTACIÓN -->
   <div id="modal-alimentacion" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-md w-full p-6 space-y-4 border border-[#c8e3dc] max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -344,7 +330,6 @@
     </div>
   </div>
 
-  <!-- MODAL CARDIO -->
   <div id="modal-cardio" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -381,7 +366,6 @@
     </div>
   </div>
 
-  <!-- MODAL ENTRENAMIENTO -->
   <div id="modal-entrenamiento" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-lg w-full p-6 space-y-4 border border-[#c8e3dc] max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -427,7 +411,6 @@
     </div>
   </div>
 
-  <!-- MODAL SALUD Y BIENESTAR -->
   <div id="modal-salud" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -482,13 +465,11 @@
     </div>
   </div>
 
-  <!-- TOAST -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 bg-[#2c3e35] text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none border border-white/20">
     <span>✨</span>
     <span id="toast-text">Acción completada</span>
   </div>
 
-  <!-- SCRIPT -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCnhvfyXpwJdYOQFCvsyHDhgw9F3X7ARR4",
@@ -813,7 +794,6 @@
       openModal('modal-salud');
     }
 
-    // SAVE FUNCTIONS
     function saveAlimentacion() {
       const editId = document.getElementById('alimentacion-edit-id').value;
       const item = {
@@ -915,7 +895,6 @@
       saveDatabase(); renderAllViews(); showToast('Registro eliminado');
     }
 
-    // RENDER VIEWS
     function renderAllViews() {
       renderResumenRange();
       renderAlimentacionView();
@@ -935,7 +914,6 @@
       totalsCard.innerHTML = '';
 
       const list = maryData.alimentacion.filter(x => x.date >= from && x.date <= to).sort((a,b)=>b.date.localeCompare(a.date));
-      const metas = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 80 };
 
       if (list.length === 0) {
         container.innerHTML = `<p class="text-xs text-stone-400 text-center py-6">No hay registros de alimentación en este rango.</p>`;
@@ -945,19 +923,19 @@
       let tCal = 0, tProt = 0, tCarb = 0, tFat = 0;
       list.forEach(al => {
         tCal += al.cal; tProt += al.prot; tCarb += al.carb; tFat += al.fat;
-        const cumplido = (al.cal <= metas.calMax) && (al.prot >= metas.protMin);
+        
+        // Ajuste solicitado: Eliminadas las etiquetas de "Déficit Excedido" o "Meta Cumplida" por cada alimento individual.
         container.innerHTML += `
           <div class="glass-card p-4 rounded-2xl flex justify-between items-center text-xs">
             <div>
               <div class="flex items-center gap-2">
                 <strong class="text-sm font-black text-stone-800">🥗 ${al.date} · ${al.nombre || 'Comida'} (${al.cant || ''} ${al.unidad || ''})</strong>
-                <span class="px-2 py-0.5 rounded-md font-bold ${cumplido ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${cumplido ? '✅ Meta Cumplida' : '❌ Déficit Excedido'}</span>
               </div>
               <p class="text-stone-600 mt-1">🔥 Calorías: <strong>${al.cal} kcal</strong> | 🥩 Prot: <strong>${al.prot}g</strong> | 🍚 Carb: <strong>${al.carb}g</strong> | 🥑 Grasa: <strong>${al.fat}g</strong></p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="editAlimentacion(${al.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold">✏️</button>
-              <button onclick="deleteItem('alimentacion', ${al.id})" class="text-red-500 font-bold px-2">✕</button>
+              <button onclick="editAlimentacion(${al.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold cursor-pointer">✏️</button>
+              <button onclick="deleteItem('alimentacion', ${al.id})" class="text-red-500 font-bold px-2 cursor-pointer">✕</button>
             </div>
           </div>`;
       });
@@ -998,8 +976,8 @@
               <p class="text-stone-600 mt-1">⏱️ ${c.min} min | 📍 ${c.km} km | 🔥 ${c.cal} kcal | 🫀 ${c.hr} lpm | ⚡ Ritmo: ${c.ritmo}</p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="editCardio(${c.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold">✏️</button>
-              <button onclick="deleteItem('cardio', ${c.id})" class="text-red-500 font-bold px-2">✕</button>
+              <button onclick="editCardio(${c.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold cursor-pointer">✏️</button>
+              <button onclick="deleteItem('cardio', ${c.id})" class="text-red-500 font-bold px-2 cursor-pointer">✕</button>
             </div>
           </div>`;
       });
@@ -1033,7 +1011,6 @@
           let sHtml = ej.series.map((s, sidx) => {
             return `<span class="${s.pr ? 'bg-[#b492cd]/40 border-[#b492cd] text-[#42225c] font-black' : 'bg-white/80 border-[#c8e3dc] text-stone-700'} px-2 py-0.5 rounded border text-[10px] font-bold">S${sidx+1}: ${s.peso} ${s.unidad} × ${s.reps} reps ${s.pr ? '👑 PR' : ''}</span>`;
           }).join(' ');
-
           ejHtml += `<div class="mt-1 text-stone-700"><strong>${idx+1}. ${ej.nombre}</strong> — ${sHtml}</div>`;
         });
 
@@ -1042,8 +1019,8 @@
             <div class="flex justify-between items-center">
               <strong class="text-sm font-black text-stone-800">💪 Rutina: ${e.rutina} (${e.date})</strong>
               <div class="flex items-center gap-2">
-                <button onclick="editEntrenamiento(${e.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold">✏️</button>
-                <button onclick="deleteItem('entrenamiento', ${e.id})" class="text-red-500 font-bold px-2">✕</button>
+                <button onclick="editEntrenamiento(${e.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold cursor-pointer">✏️</button>
+                <button onclick="deleteItem('entrenamiento', ${e.id})" class="text-red-500 font-bold px-2 cursor-pointer">✕</button>
               </div>
             </div>
             <p class="text-stone-600">⏱️ Tiempo: <strong>${e.tiempo} min</strong> | 🔥 Calorías: <strong>${e.cal} kcal</strong> | 🫀 HR: <strong>${e.hr} lpm</strong> | ⚡ Esfuerzo RPE: <strong>${e.esfuerzo}/10</strong></p>
@@ -1080,8 +1057,8 @@
               <p class="text-stone-600 mt-1">💧 Agua: <strong>${sItem.agua} L</strong> | 😴 Sueño: <strong>${sItem.sueno} h (${sItem.calidadSueno})</strong> | 🧠 Ánimo: <strong>${sItem.animo}</strong> | 🧘 Med: <strong>${sItem.med}m</strong> | 🍫 Dulce: <strong>${sItem.dulce ? 'Sí' : 'No'}</strong> | 🩸 Periodo: <strong>${sItem.periodo ? 'Sí' : 'No'}</strong></p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="editSalud(${sItem.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold">✏️</button>
-              <button onclick="deleteItem('salud', ${sItem.id})" class="text-red-500 font-bold px-2">✕</button>
+              <button onclick="editSalud(${sItem.id})" class="px-2.5 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold cursor-pointer">✏️</button>
+              <button onclick="deleteItem('salud', ${sItem.id})" class="text-red-500 font-bold px-2 cursor-pointer">✕</button>
             </div>
           </div>`;
       });
@@ -1230,7 +1207,7 @@
             </div>
             <div class="flex items-center space-x-2">
               <div class="flex space-x-1.5">${trackerDaysHtml}</div>
-              <button onclick="deleteCustomGoal(${g.id})" class="text-stone-400 hover:text-red-500 font-bold px-2">✕</button>
+              <button onclick="deleteCustomGoal(${g.id})" class="text-stone-400 hover:text-red-500 font-bold px-2 cursor-pointer">✕</button>
             </div>
           </div>`;
       });
@@ -1343,7 +1320,7 @@
           report += `💪 Entreno (${e.rutina}): ${e.tiempo}m | ${e.cal}kcal | RPE: ${e.esfuerzo}/10\n`;
           (e.ejercicios || []).forEach(ej => {
             let sTxt = ej.series.map((s,i) => `S${i+1}: ${s.peso}${s.unidad}x${s.reps}${s.pr?' 👑':''}`).join(', ');
-            report += `   ▪️ ${ej.nombre}: ${sTxt}\n`;
+            report += `    ▪️ ${ej.nombre}: ${sTxt}\n`;
           });
         });
 
@@ -1359,3 +1336,4 @@
   </script>
 </body>
 </html>
+
