@@ -80,12 +80,12 @@
       </div>
 
       <nav class="flex flex-wrap items-center justify-center gap-1.5 bg-[#eaf4f1] p-1.5 rounded-2xl border border-[#c8e3dc]">
-        <button onclick="switchTab('resumen')" id="tab-btn-resumen" class="nav-btn active px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600">📊 Resumen</button>
-        <button onclick="switchTab('alimentacion')" id="tab-btn-alimentacion" class="nav-btn px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600">🥗 Alimentación</button>
-        <button onclick="switchTab('cardio')" id="tab-btn-cardio" class="nav-btn px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600">🏃‍♀️ Cardio</button>
-        <button onclick="switchTab('entrenamiento')" id="tab-btn-entrenamiento" class="nav-btn px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600">💪 Entreno</button>
-        <button onclick="switchTab('calendario')" id="tab-btn-calendario" class="nav-btn px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600">🗓️ Calendario</button>
-        <button onclick="switchTab('salud')" id="tab-btn-salud" class="nav-btn px-3 py-1.5 rounded-xl font-bold text-xs text-stone-600">🍎 Bienestar</button>
+        <button onclick="switchTab('resumen')" id="tab-btn-resumen" class="nav-btn active px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">📊 Resumen</button>
+        <button onclick="switchTab('alimentacion')" id="tab-btn-alimentacion" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🥗 Alimentación</button>
+        <button onclick="switchTab('cardio')" id="tab-btn-cardio" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🏃‍♀️ Cardio</button>
+        <button onclick="switchTab('entrenamiento')" id="tab-btn-entrenamiento" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">💪 Entreno</button>
+        <button onclick="switchTab('calendario')" id="tab-btn-calendario" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🗓️ Calendario</button>
+        <button onclick="switchTab('salud')" id="tab-btn-salud" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">🍎 Bienestar</button>
         <button onclick="switchTab('peso')" id="tab-btn-peso" class="nav-btn px-3.5 py-1.5 rounded-xl font-bold text-xs text-stone-600">⚖️ Peso & Biometría</button>
       </nav>
 
@@ -229,24 +229,38 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 7: NUEVA SECCIÓN DE PESO & BIOMETRÍA -->
+    <!-- PESTAÑA 7: PESO & BIOMETRÍA -->
     <section id="pane-peso" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">⚖️ Control de Peso, Medidas & Fotos</h3>
-            <p class="text-xs text-stone-500">Seguimiento biométrico, promedios semanales y galería visual</p>
+            <p class="text-xs text-stone-500">Seguimiento biométrico, objetivos, promedios y galería visual ampliada</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="peso-promedio-badge" class="px-3 py-1.5 rounded-xl bg-[#b492cd]/20 text-[#633a82] font-black text-xs border border-[#b492cd]/40">Promedio Semanal: -- kg</span>
           </div>
         </div>
 
-        <!-- Fila de Formularios Rápidos -->
+        <!-- SECCIÓN DE OBJETIVO / META DE PESO -->
+        <div class="glass-card p-5 rounded-2xl space-y-3 bg-gradient-to-r from-purple-50/60 to-teal-50/60">
+          <div class="flex justify-between items-center">
+            <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">🎯 Mi Objetivo & Progreso de Peso</h4>
+            <button onclick="openModalObjetivo()" class="px-3 py-1 bg-[#b492cd] text-white font-bold text-xs rounded-xl shadow-sm cursor-pointer">⚙️ Configurar Objetivo</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-1" id="objetivo-kpi-container">
+            <div class="bg-white/80 p-3 rounded-xl border border-[#c8e3dc]"><span class="text-stone-500 block">Peso Inicial</span><strong class="text-base font-black text-stone-800" id="obj-inicial">-- kg</strong></div>
+            <div class="bg-white/80 p-3 rounded-xl border border-[#c8e3dc]"><span class="text-stone-500 block">Peso Objetivo</span><strong class="text-base font-black text-[#b492cd]" id="obj-meta">-- kg</strong></div>
+            <div class="bg-white/80 p-3 rounded-xl border border-[#c8e3dc]"><span class="text-stone-500 block">Progreso Actual</span><strong class="text-base font-black text-[#5fa89b]" id="obj-progreso">-- kg</strong></div>
+          </div>
+        </div>
+
+        <!-- Fila de Formularios (Peso Diario y Medidas Corporales Completas) -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Formulario de Peso Diario -->
           <div class="glass-card p-5 rounded-2xl space-y-3">
             <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">📌 Registrar Peso Diario</h4>
+            <input type="hidden" id="peso-edit-id">
             <div class="grid grid-cols-2 gap-2 text-xs">
               <div><label class="font-bold text-stone-600 block mb-1">Fecha</label><input type="date" id="peso-date" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold"></div>
               <div><label class="font-bold text-stone-600 block mb-1">Peso (kg)</label><input type="number" step="0.1" id="peso-kg" placeholder="65.4" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold"></div>
@@ -258,24 +272,33 @@
             <button onclick="savePesoLog()" class="w-full py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer shadow-sm">Registrar Peso</button>
           </div>
 
-          <!-- Formulario de Medidas Corporales -->
+          <!-- Formulario de Medidas Corporales Completas -->
           <div class="glass-card p-5 rounded-2xl space-y-3">
-            <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">📏 Registrar Medidas Corporales (cm)</h4>
+            <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">📏 Medidas Corporales (cm)</h4>
+            <input type="hidden" id="med-edit-id">
+            <div class="text-xs mb-2"><label class="font-bold text-stone-600 block mb-1">Fecha</label><input type="date" id="med-date" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold"></div>
+            
             <div class="grid grid-cols-3 gap-2 text-xs">
-              <div><label class="font-bold text-stone-600 block mb-1">Fecha</label><input type="date" id="med-date" class="col-span-3 w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold"></div>
-              <div><label class="font-bold text-stone-600 block mb-1">Cintura</label><input type="number" step="0.5" id="med-cintura" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold"></div>
-              <div><label class="font-bold text-stone-600 block mb-1">Cadera</label><input type="number" step="0.5" id="med-cadera" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold"></div>
-              <div><label class="font-bold text-stone-600 block mb-1">Pierna</label><input type="number" step="0.5" id="med-pierna" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Cuello</label><input type="number" step="0.5" id="med-cuello" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Pecho</label><input type="number" step="0.5" id="med-pecho" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Cintura</label><input type="number" step="0.5" id="med-cintura" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Caderas</label><input type="number" step="0.5" id="med-cadera" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Glúteo</label><input type="number" step="0.5" id="med-gluteo" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Cuád. Der.</label><input type="number" step="0.5" id="med-cuad-der" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Cuád. Izq.</label><input type="number" step="0.5" id="med-cuad-izq" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Pant. Der.</label><input type="number" step="0.5" id="med-pant-der" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Pant. Izq.</label><input type="number" step="0.5" id="med-pant-izq" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Brazo Der.</label><input type="number" step="0.5" id="med-brazo-der" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
+              <div><label class="font-bold text-stone-600 block mb-0.5">Brazo Izq.</label><input type="number" step="0.5" id="med-brazo-izq" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 font-bold"></div>
             </div>
-            <div><label class="font-bold text-stone-600 block mb-1">Brazo (cm)</label><input type="number" step="0.5" id="med-brazo" placeholder="cm" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-2 font-bold text-xs"></div>
-            <button onclick="saveMedidasLog()" class="w-full py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer shadow-sm">Guardar Medidas</button>
+            <button onclick="saveMedidasLog()" class="w-full py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer shadow-sm mt-2">Guardar Medidas</button>
           </div>
         </div>
 
-        <!-- Formulario de Fotos de Progreso -->
+        <!-- Formulario de Fotos de Progreso (Subida desde Archivos) -->
         <div class="glass-card p-5 rounded-2xl space-y-3">
-          <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">📸 Galería de Fotos de Progreso</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+          <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">📸 Subir Foto de Progreso (Desde Dispositivo)</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
             <div><label class="font-bold text-stone-600 block mb-1">Fecha</label><input type="date" id="foto-date" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold"></div>
             <div>
               <label class="font-bold text-stone-600 block mb-1">Pose</label>
@@ -285,9 +308,9 @@
                 <option value="Espalda">Espalda</option>
               </select>
             </div>
-            <div class="sm:col-span-2"><label class="font-bold text-stone-600 block mb-1">Enlace o URL de la foto</label><input type="text" id="foto-url" placeholder="https://..." class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold"></div>
+            <div><label class="font-bold text-stone-600 block mb-1">Seleccionar Archivo (Imagen)</label><input type="file" id="foto-file" accept="image/*" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-2 py-1.5 text-xs font-bold"></div>
           </div>
-          <button onclick="saveFotoLog()" class="w-full py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer shadow-sm">+ Añadir Foto de Progreso</button>
+          <button onclick="saveFotoLog()" class="w-full py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer shadow-sm">+ Guardar Foto</button>
         </div>
 
         <!-- Sección de Gráficas (Chart.js) -->
@@ -301,31 +324,39 @@
             </div>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc]"><canvas id="weightChart" height="180"></canvas></div>
-            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc]"><canvas id="measurementsChart" height="180"></canvas></div>
+            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc]"><canvas id="weightChart" height="200"></canvas></div>
+            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc]"><canvas id="measurementsChart" height="200"></canvas></div>
           </div>
         </div>
 
-        <!-- Tracker Visual de Constancia de Pesaje (Estilo Calendario / Píldoras Recientes) -->
+        <!-- Tracker Visual de Constancia de Pesaje (Rango Personalizado Desde / Hasta) -->
         <div class="glass-card p-5 rounded-2xl space-y-3">
-          <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">🗓️ Constancia de Pesaje (Últimos 14 días)</h4>
-          <p class="text-[11px] text-stone-500">Visualiza rápidamente qué días te pesaste y detecta si te faltó registrar algún día.</p>
-          <div id="peso-streak-container" class="grid grid-cols-7 sm:grid-cols-14 gap-2 pt-2"></div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#c8e3dc]">
+            <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">🗓️ Constancia de Pesaje (Fecha Personalizada)</h4>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="font-bold text-stone-600">Desde:</span>
+              <input type="date" id="streak-from" onchange="renderPesoStreak()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 font-bold">
+              <span class="font-bold text-stone-600">Hasta:</span>
+              <input type="date" id="streak-to" onchange="renderPesoStreak()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 font-bold">
+            </div>
+          </div>
+          <p class="text-[11px] text-stone-500">Visualiza qué días te pesaste y detecta fácilmente si te faltó registrar algún día en cualquier mes (ej. enero, septiembre, etc.).</p>
+          <div id="peso-streak-container" class="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-14 gap-2 pt-2"></div>
         </div>
 
-        <!-- Listados de Historiales -->
+        <!-- Listados de Historiales & Galería Visual Ampliada -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-72 overflow-y-auto">
+          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-80 overflow-y-auto">
             <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📋 Historial de Peso</h5>
             <div id="peso-history-list" class="space-y-2 text-xs"></div>
           </div>
-          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-72 overflow-y-auto">
+          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-80 overflow-y-auto">
             <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📋 Historial de Medidas</h5>
             <div id="med-history-list" class="space-y-2 text-xs"></div>
           </div>
-          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-72 overflow-y-auto">
-            <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📸 Galería Visual</h5>
-            <div id="foto-gallery-grid" class="grid grid-cols-2 gap-2 pt-1"></div>
+          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-80 overflow-y-auto">
+            <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📸 Galería Visual Ampliada</h5>
+            <div id="foto-gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1"></div>
           </div>
         </div>
 
@@ -334,7 +365,25 @@
 
   </main>
 
-  <!-- MODALES -->
+  <!-- MODAL CONFIGURAR OBJETIVO DE PESO -->
+  <div id="modal-objetivo" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-6 space-y-4 border border-[#c8e3dc]">
+      <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
+        <h3 class="text-base font-black text-stone-800">🎯 Configurar mi Objetivo</h3>
+        <button onclick="closeModal('modal-objetivo')" class="text-stone-400 font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-stone-600 block mb-1">Peso Inicial (kg)</label><input type="number" step="0.1" id="cfg-peso-inicial" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+        <div><label class="font-bold text-stone-600 block mb-1">Peso Objetivo / Meta (kg)</label><input type="number" step="0.1" id="cfg-peso-meta" class="w-full bg-white border border-[#c8e3dc] rounded-xl px-3 py-2 font-bold text-stone-800"></div>
+      </div>
+      <div class="pt-2 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-objetivo')" class="px-4 py-2 border rounded-xl text-xs font-bold cursor-pointer">Cancelar</button>
+        <button onclick="saveObjetivoConfig()" class="px-4 py-2 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES ANTERIORES INTACTOS -->
   <div id="modal-meta-custom" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-md w-full p-6 space-y-4 border border-[#c8e3dc]">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -613,7 +662,8 @@
       salud: [],
       pesos: [],
       medidas: [],
-      fotos: []
+      fotos: [],
+      biometriaMeta: { inicial: 0, meta: 0 }
     };
 
     let calendarYear = new Date().getFullYear();
@@ -627,11 +677,11 @@
       const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const startStr = thirtyDaysAgo.toISOString().slice(0, 10);
       
-      ['res-from', 'al-from', 'ca-from', 'en-from', 'sa-from', 'chart-from'].forEach(id => {
+      ['res-from', 'al-from', 'ca-from', 'en-from', 'sa-from', 'chart-from', 'streak-from'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = startStr;
       });
-      ['res-to', 'al-to', 'ca-to', 'en-to', 'sa-to', 'chart-to'].forEach(id => {
+      ['res-to', 'al-to', 'ca-to', 'en-to', 'sa-to', 'chart-to', 'streak-to'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = today;
       });
@@ -671,6 +721,7 @@
       if (!Array.isArray(maryData.pesos)) maryData.pesos = [];
       if (!Array.isArray(maryData.medidas)) maryData.medidas = [];
       if (!Array.isArray(maryData.fotos)) maryData.fotos = [];
+      if (!maryData.biometriaMeta) maryData.biometriaMeta = { inicial: 0, meta: 0 };
     }
 
     function loadDatabaseLocal() {
@@ -756,6 +807,20 @@
         agua: parseFloat(document.getElementById('meta-agua').value || 2.0)
       };
       saveDatabase(); closeModal('modal-metas'); renderAllViews(); showToast('Metas actualizadas');
+    }
+
+    function openModalObjetivo() {
+      document.getElementById('cfg-peso-inicial').value = maryData.biometriaMeta?.inicial || '';
+      document.getElementById('cfg-peso-meta').value = maryData.biometriaMeta?.meta || '';
+      openModal('modal-objetivo');
+    }
+
+    function saveObjetivoConfig() {
+      maryData.biometriaMeta = {
+        inicial: parseFloat(document.getElementById('cfg-peso-inicial').value || 0),
+        meta: parseFloat(document.getElementById('cfg-peso-meta').value || 0)
+      };
+      saveDatabase(); closeModal('modal-objetivo'); renderBiometriaView(); showToast('Objetivo actualizado');
     }
 
     function openModalAlimentacion() {
@@ -1019,53 +1084,114 @@
       saveDatabase(); closeModal('modal-salud'); renderAllViews(); showToast('Bienestar guardado');
     }
 
-    // --- NUEVAS FUNCIONES DE PESO & BIOMETRÍA ---
+    // --- FUNCIONES DE PESO & BIOMETRÍA CON EDITAR Y ARCHIVOS ---
     function savePesoLog() {
+      const editId = document.getElementById('peso-edit-id').value;
       const date = document.getElementById('peso-date').value;
       const kg = parseFloat(document.getElementById('peso-kg').value || 0);
       const nota = document.getElementById('peso-nota').value;
       if (!date || !kg) { showToast('Ingresa fecha y peso válido'); return; }
 
-      const item = { id: Date.now(), date, kg, nota };
-      maryData.pesos.push(item);
+      const item = { id: editId ? parseInt(editId) : Date.now(), date, kg, nota };
+      if (editId) {
+        maryData.pesos = maryData.pesos.map(x => x.id === parseInt(editId) ? item : x);
+        document.getElementById('peso-edit-id').value = '';
+      } else {
+        maryData.pesos.push(item);
+      }
+
       saveDatabase();
       document.getElementById('peso-kg').value = '';
       document.getElementById('peso-nota').value = '';
       renderBiometriaView();
-      showToast('⚖️ Peso registrado con éxito');
+      showToast('⚖️ Peso guardado con éxito');
+    }
+
+    function editPesoLog(id) {
+      const item = maryData.pesos.find(x => x.id === id);
+      if(!item) return;
+      document.getElementById('peso-edit-id').value = item.id;
+      document.getElementById('peso-date').value = item.date;
+      document.getElementById('peso-kg').value = item.kg;
+      document.getElementById('peso-nota').value = item.nota || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function saveMedidasLog() {
+      const editId = document.getElementById('med-edit-id').value;
       const date = document.getElementById('med-date').value;
-      const cintura = parseFloat(document.getElementById('med-cintura').value || 0);
-      const cadera = parseFloat(document.getElementById('med-cadera').value || 0);
-      const pierna = parseFloat(document.getElementById('med-pierna').value || 0);
-      const brazo = parseFloat(document.getElementById('med-brazo').value || 0);
       if (!date) { showToast('Selecciona una fecha'); return; }
 
-      const item = { id: Date.now(), date, cintura, cadera, pierna, brazo };
-      maryData.medidas.push(item);
+      const item = {
+        id: editId ? parseInt(editId) : Date.now(),
+        date,
+        cuello: parseFloat(document.getElementById('med-cuello').value || 0),
+        pecho: parseFloat(document.getElementById('med-pecho').value || 0),
+        cintura: parseFloat(document.getElementById('med-cintura').value || 0),
+        cadera: parseFloat(document.getElementById('med-cadera').value || 0),
+        gluteo: parseFloat(document.getElementById('med-gluteo').value || 0),
+        cuad_der: parseFloat(document.getElementById('med-cuad-der').value || 0),
+        cuad_izq: parseFloat(document.getElementById('med-cuad-izq').value || 0),
+        pant_der: parseFloat(document.getElementById('med-pant-der').value || 0),
+        pant_izq: parseFloat(document.getElementById('med-pant-izq').value || 0),
+        brazo_der: parseFloat(document.getElementById('med-brazo-der').value || 0),
+        brazo_izq: parseFloat(document.getElementById('med-brazo-izq').value || 0)
+      };
+
+      if (editId) {
+        maryData.medidas = maryData.medidas.map(x => x.id === parseInt(editId) ? item : x);
+        document.getElementById('med-edit-id').value = '';
+      } else {
+        maryData.medidas.push(item);
+      }
+
       saveDatabase();
-      document.getElementById('med-cintura').value = '';
-      document.getElementById('med-cadera').value = '';
-      document.getElementById('med-pierna').value = '';
-      document.getElementById('med-brazo').value = '';
+      ['med-cuello','med-pecho','med-cintura','med-cadera','med-gluteo','med-cuad-der','med-cuad-izq','med-pant-der','med-pant-izq','med-brazo-der','med-brazo-izq'].forEach(id => document.getElementById(id).value = '');
       renderBiometriaView();
       showToast('📏 Medidas guardadas');
+    }
+
+    function editMedidasLog(id) {
+      const item = maryData.medidas.find(x => x.id === id);
+      if(!item) return;
+      document.getElementById('med-edit-id').value = item.id;
+      document.getElementById('med-date').value = item.date;
+      document.getElementById('med-cuello').value = item.cuello || '';
+      document.getElementById('med-pecho').value = item.pecho || '';
+      document.getElementById('med-cintura').value = item.cintura || '';
+      document.getElementById('med-cadera').value = item.cadera || '';
+      document.getElementById('med-gluteo').value = item.gluteo || '';
+      document.getElementById('med-cuad-der').value = item.cuad_der || '';
+      document.getElementById('med-cuad-izq').value = item.cuad_izq || '';
+      document.getElementById('med-pant-der').value = item.pant_der || '';
+      document.getElementById('med-pant-izq').value = item.pant_izq || '';
+      document.getElementById('med-brazo-der').value = item.brazo_der || '';
+      document.getElementById('med-brazo-izq').value = item.brazo_izq || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function saveFotoLog() {
       const date = document.getElementById('foto-date').value;
       const pose = document.getElementById('foto-pose').value;
-      const url = document.getElementById('foto-url').value;
-      if (!date || !url) { showToast('Ingresa fecha y enlace de la foto'); return; }
+      const fileInput = document.getElementById('foto-file');
+      
+      if (!date || !fileInput.files || fileInput.files.length === 0) {
+        showToast('Selecciona una fecha y un archivo de imagen');
+        return;
+      }
 
-      const item = { id: Date.now(), date, pose, url };
-      maryData.fotos.push(item);
-      saveDatabase();
-      document.getElementById('foto-url').value = '';
-      renderBiometriaView();
-      showToast('📸 Foto añadida a la galería');
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const url = e.target.result; // Base64 image
+        const item = { id: Date.now(), date, pose, url };
+        maryData.fotos.push(item);
+        saveDatabase();
+        fileInput.value = '';
+        renderBiometriaView();
+        showToast('📸 Foto añadida con éxito');
+      };
+      reader.readAsDataURL(file);
     }
 
     function deleteBiometriaItem(type, id) {
@@ -1092,11 +1218,34 @@
     }
 
     function renderBiometriaView() {
+      renderObjetivoProgress();
       renderPesoHistory();
       renderMedidasHistory();
       renderFotosGallery();
       renderPesoStreak();
       renderBiometriaCharts();
+    }
+
+    function renderObjetivoProgress() {
+      const inicialEl = document.getElementById('obj-inicial');
+      const metaEl = document.getElementById('obj-meta');
+      const progresoEl = document.getElementById('obj-progreso');
+      if(!inicialEl) return;
+
+      const inicial = maryData.biometriaMeta?.inicial || 0;
+      const meta = maryData.biometriaMeta?.meta || 0;
+
+      inicialEl.innerText = inicial ? `${inicial} kg` : 'Sin definir';
+      metaEl.innerText = meta ? `${meta} kg` : 'Sin definir';
+
+      const sorted = [...maryData.pesos].sort((a,b)=>a.date.localeCompare(b.date));
+      if (sorted.length > 0 && inicial > 0) {
+        const actual = sorted[sorted.length - 1].kg;
+        const diff = (actual - inicial).toFixed(1);
+        progresoEl.innerText = `${actual} kg (${diff > 0 ? '+' + diff : diff} kg)`;
+      } else {
+        progresoEl.innerText = '-- kg';
+      }
     }
 
     function renderPesoHistory() {
@@ -1112,7 +1261,6 @@
         return;
       }
 
-      // Calcular promedio de los últimos 7 días o registros de la semana actual
       const last7 = sorted.slice(0, 7);
       const avg = (last7.reduce((acc, cur) => acc + cur.kg, 0) / last7.length).toFixed(1);
       if(badge) badge.innerText = `Promedio Semanal: ${avg} kg`;
@@ -1122,9 +1270,12 @@
           <div class="glass-card p-2.5 rounded-xl flex justify-between items-center text-xs">
             <div>
               <strong>📅 ${p.date} · ${p.kg} kg</strong>
-              ${p.nota ? `<p class="text-[10px] text-stone-500 italic">Note: ${p.nota}</p>` : ''}
+              ${p.nota ? `<p class="text-[10px] text-stone-500 italic">Nota: ${p.nota}</p>` : ''}
             </div>
-            <button onclick="deleteBiometriaItem('pesos', ${p.id})" class="text-red-500 font-bold px-1.5 cursor-pointer">✕</button>
+            <div class="flex items-center gap-1">
+              <button onclick="editPesoLog(${p.id})" class="px-2 py-1 bg-white border border-[#c8e3dc] rounded-lg font-bold cursor-pointer">✏️</button>
+              <button onclick="deleteBiometriaItem('pesos', ${p.id})" class="text-red-500 font-bold px-1.5 cursor-pointer">✕</button>
+            </div>
           </div>`;
       });
     }
@@ -1142,12 +1293,16 @@
 
       sorted.forEach(m => {
         container.innerHTML += `
-          <div class="glass-card p-2.5 rounded-xl text-xs space-y-1">
+          <div class="glass-card p-3 rounded-xl text-xs space-y-1">
             <div class="flex justify-between items-center">
               <strong>📅 ${m.date}</strong>
-              <button onclick="deleteBiometriaItem('medidas', ${m.id})" class="text-red-500 font-bold px-1.5 cursor-pointer">✕</button>
+              <div class="flex items-center gap-1">
+                <button onclick="editMedidasLog(${m.id})" class="px-2 py-1 bg-white border border-[#c8e3dc] rounded-lg font-bold cursor-pointer">✏️</button>
+                <button onclick="deleteBiometriaItem('medidas', ${m.id})" class="text-red-500 font-bold px-1.5 cursor-pointer">✕</button>
+              </div>
             </div>
-            <p class="text-stone-600">Cintura: ${m.cintura||'-'}cm | Cadera: ${m.cadera||'-'}cm | Pierna: ${m.pierna||'-'}cm | Brazo: ${m.brazo||'-'}cm</p>
+            <p class="text-stone-600">Cuello: ${m.cuello||'-'} | Pecho: ${m.pecho||'-'} | Cintura: ${m.cintura||'-'} | Cadera: ${m.cadera||'-'} | Glúteo: ${m.gluteo||'-'}</p>
+            <p class="text-stone-500">Cuád.D/I: ${m.cuad_der||'-'}/${m.cuad_izq||'-'} | Pant.D/I: ${m.pant_der||'-'}/${m.pant_izq||'-'} | Brazo.D/I: ${m.brazo_der||'-'}/${m.brazo_izq||'-'}</p>
           </div>`;
       });
     }
@@ -1165,12 +1320,12 @@
 
       sorted.forEach(f => {
         grid.innerHTML += `
-          <div class="relative rounded-xl overflow-hidden border border-[#c8e3dc] bg-white h-32 group">
+          <div class="relative rounded-2xl overflow-hidden border border-[#c8e3dc] bg-white h-56 group shadow-sm">
             <img src="${f.url}" alt="${f.pose}" class="w-full h-full object-cover">
-            <div class="absolute inset-x-0 bottom-0 bg-stone-900/70 text-white text-[9px] font-bold p-1 text-center">
-              ${f.date} (${f.pose})
+            <div class="absolute inset-x-0 bottom-0 bg-stone-900/75 text-white text-[10px] font-bold p-1.5 text-center">
+              ${f.date} · Pose: ${f.pose}
             </div>
-            <button onclick="deleteBiometriaItem('fotos', ${f.id})" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition">✕</button>
+            <button onclick="deleteBiometriaItem('fotos', ${f.id})" class="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">✕</button>
           </div>`;
       });
     }
@@ -1180,20 +1335,31 @@
       if(!container) return;
       container.innerHTML = '';
 
-      const today = new Date();
-      const streakDays = [];
-      for (let i = 13; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
+      const fromStr = document.getElementById('streak-from') ? document.getElementById('streak-from').value : '';
+      const toStr = document.getElementById('streak-to') ? document.getElementById('streak-to').value : '';
+      if(!fromStr || !toStr) return;
+
+      const startDate = new Date(fromStr);
+      const endDate = new Date(toStr);
+      const days = [];
+
+      let curr = new Date(startDate);
+      while(curr <= endDate) {
+        const yyyy = curr.getFullYear();
+        const mm = String(curr.getMonth() + 1).padStart(2, '0');
+        const dd = String(curr.getDate()).padStart(2, '0');
         const dateStr = `${yyyy}-${mm}-${dd}`;
-        const dayLabel = ['D','L','M','X','J','V','S'][d.getDay()];
-        streakDays.push({ dateStr, label: dayLabel, dayNum: dd });
+        const dayLabel = ['D','L','M','X','J','V','S'][curr.getDay()];
+        days.push({ dateStr, label: dayLabel, dayNum: dd });
+        curr.setDate(curr.getDate() + 1);
       }
 
-      streakDays.forEach(s => {
+      if (days.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 col-span-full text-center">Selecciona un rango de fechas válido.</p>`;
+        return;
+      }
+
+      days.forEach(s => {
         const logged = maryData.pesos.some(p => p.date === s.dateStr);
         let boxClass = logged ? 'bg-emerald-500/20 border-emerald-500 text-emerald-800 font-black' : 'bg-white border-[#c8e3dc] text-stone-400';
         container.innerHTML += `
@@ -1210,7 +1376,6 @@
       const from = document.getElementById('chart-from') ? document.getElementById('chart-from').value : '';
       const to = document.getElementById('chart-to') ? document.getElementById('chart-to').value : '';
 
-      // 1. Gráfica de Peso
       const pesoFiltered = maryData.pesos
         .filter(p => (!from || p.date >= from) && (!to || p.date <= to))
         .sort((a,b)=>a.date.localeCompare(b.date));
@@ -1243,7 +1408,6 @@
         });
       }
 
-      // 2. Gráfica de Medidas (Cintura / Cadera)
       const medFiltered = maryData.medidas
         .filter(m => (!from || m.date >= from) && (!to || m.date <= to))
         .sort((a,b)=>a.date.localeCompare(b.date));
