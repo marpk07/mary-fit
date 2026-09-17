@@ -95,6 +95,15 @@
     </div>
   </header>
 
+  <!-- BARRA DE RESPALDO ENTRE DISPOSITIVOS -->
+  <div class="bg-[#eaf4f1] border-b border-[#c8e3dc] px-4 py-2 flex justify-between items-center text-xs font-bold text-stone-700 max-w-7xl mx-auto w-full">
+    <span>🔄 Sincronización Manual Celular ⇄ PC:</span>
+    <div class="space-x-3">
+      <button onclick="openExportModal()" class="text-[#5fa89b] hover:underline cursor-pointer">📤 Copiar Código de Datos</button>
+      <button onclick="openImportModal()" class="text-[#b492cd] hover:underline cursor-pointer">📥 Pegar y Sincronizar Datos</button>
+    </div>
+  </div>
+
   <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
 
@@ -388,6 +397,32 @@
     </section>
 
   </main>
+
+  <!-- MODAL EXPORTAR RESPALDO -->
+  <div id="modal-export" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl border border-[#c8e3dc]">
+      <h3 class="text-sm font-black text-stone-800 text-center">📤 Copiar Código de Datos</h3>
+      <p class="text-[11px] text-stone-500 text-center">Copia este código y guárdalo o mándatelo para sincronizar con tu otro dispositivo:</p>
+      <textarea id="export-textarea" class="w-full h-32 bg-white border border-[#c8e3dc] rounded-2xl p-2 text-[10px] font-mono text-stone-700 outline-none resize-none" readonly></textarea>
+      <div class="flex justify-between pt-2">
+        <button onclick="closeModal('modal-export')" class="px-4 py-1.5 bg-stone-100 rounded-xl text-xs font-bold text-stone-700 cursor-pointer">Cerrar</button>
+        <button onclick="copyExportText()" class="px-4 py-1.5 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer">📋 Copiar al Portapapeles</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL IMPORTAR RESPALDO -->
+  <div id="modal-import" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
+    <div class="glass-card-solid rounded-3xl max-w-sm w-full p-5 space-y-3 shadow-2xl border border-[#c8e3dc]">
+      <h3 class="text-sm font-black text-stone-800 text-center">📥 Sincronizar Datos</h3>
+      <p class="text-[11px] text-stone-500 text-center">Pega aquí el código que copiaste de tu otro dispositivo:</p>
+      <textarea id="import-textarea" placeholder="Pega el código aquí..." class="w-full h-32 bg-white border border-[#c8e3dc] rounded-2xl p-2 text-[10px] font-mono text-stone-700 outline-none resize-none"></textarea>
+      <div class="flex justify-between pt-2">
+        <button onclick="closeModal('modal-import')" class="px-4 py-1.5 bg-stone-100 rounded-xl text-xs font-bold text-stone-700 cursor-pointer">Cancelar</button>
+        <button onclick="applyImportText()" class="px-4 py-1.5 bg-[#b492cd] text-white rounded-xl text-xs font-black cursor-pointer">✨ Restaurar Datos</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL CONFIGURAR OBJETIVO DE PESO -->
   <div id="modal-objetivo" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
@@ -787,6 +822,54 @@
       });
       renderAllViews();
       if(tabId === 'peso') renderBiometriaCharts();
+    }
+
+    // Funciones de Respaldo y Sincronización Manual
+    function openExportModal() {
+      let allData = {};
+      for(let i=0; i<localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if(key) allData[key] = localStorage.getItem(key);
+      }
+      const txt = document.getElementById('export-textarea');
+      if(txt) {
+        txt.value = JSON.stringify(allData);
+        openModal('modal-export');
+      }
+    }
+
+    function copyExportText() {
+      const txt = document.getElementById('export-textarea');
+      if(txt) {
+        txt.select();
+        navigator.clipboard.writeText(txt.value).then(() => {
+          showToast("📋 ¡Copiado al portapapeles!");
+          closeModal('modal-export');
+        });
+      }
+    }
+
+    function openImportModal() {
+      const txt = document.getElementById('import-textarea');
+      if(txt) txt.value = '';
+      openModal('modal-import');
+    }
+
+    function applyImportText() {
+      const txt = document.getElementById('import-textarea');
+      if(!txt || !txt.value.trim()) return alert("Pega el código primero.");
+      try {
+        const parsed = JSON.parse(txt.value.trim());
+        for(let k in parsed) {
+          localStorage.setItem(k, parsed[k]);
+        }
+        loadDatabaseLocal();
+        renderAllViews();
+        closeModal('modal-import');
+        showToast("✨ ¡Datos sincronizados con éxito!");
+      } catch(e) {
+        alert("El código no es válido.");
+      }
     }
 
     function openModalMetaCustom() {
@@ -2001,7 +2084,7 @@
         });
 
         fEntreno.filter(x => x.date === d).forEach(e => {
-          report += `🏋🏻‍♀️ Entreno (${e.rutina}): ${e.tiempo}m | ${e.cal}kcal | RPE: ${e.esfuerzo}/10\n`;
+          report += `💪 Entreno (${e.rutina}): ${e.tiempo}m | ${e.cal}kcal | RPE: ${e.esfuerzo}/10\n`;
           (e.ejercicios || []).forEach(ej => {
             let sTxt = ej.series.map((s,i) => `S${i+1}: ${s.peso}${s.unidad}x${s.reps}${s.pr?' 👑':''}`).join(', ');
             report += `    ▪️ ${ej.nombre}: ${sTxt}\n`;
