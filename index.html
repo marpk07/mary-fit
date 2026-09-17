@@ -235,7 +235,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">⚖️ Control de Peso, Medidas & Fotos</h3>
-            <p class="text-xs text-stone-500">Seguimiento biométrico completo, objetivos, promedios y comparativa visual</p>
+            <p class="text-xs text-stone-500">Seguimiento biométrico completo, objetivos, promedios y galería visual ampliada</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="peso-promedio-badge" class="px-3 py-1.5 rounded-xl bg-[#b492cd]/20 text-[#633a82] font-black text-xs border border-[#b492cd]/40">Promedio Semanal: -- kg</span>
@@ -366,8 +366,8 @@
           <div id="peso-streak-container" class="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-14 gap-2 pt-2"></div>
         </div>
 
-        <!-- Listados de Historiales & Galería Visual Ampliada (Lado a Lado por Fecha) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Listados de Historiales (Peso y Medidas lado a lado) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="glass-card p-4 rounded-2xl space-y-2 max-h-96 overflow-y-auto">
             <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📋 Historial de Peso</h5>
             <div id="peso-history-list" class="space-y-2 text-xs"></div>
@@ -376,10 +376,12 @@
             <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📋 Historial de Medidas</h5>
             <div id="med-history-list" class="space-y-2 text-xs"></div>
           </div>
-          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-96 overflow-y-auto lg:col-span-1">
-            <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📸 Galería Visual (Lado a Lado)</h5>
-            <div id="foto-gallery-grid" class="space-y-4 pt-1"></div>
-          </div>
+        </div>
+
+        <!-- GALERÍA VISUAL AMPLIADA (ABARCA TODO EL ANCHO) -->
+        <div class="glass-card p-6 rounded-3xl space-y-4">
+          <h5 class="font-black text-stone-800 text-sm pb-2 border-b border-[#c8e3dc]">📸 Galería Visual de Progreso (Lado a Lado por Fecha)</h5>
+          <div id="foto-gallery-grid" class="space-y-6"></div>
         </div>
 
       </div>
@@ -1337,7 +1339,6 @@
       if(!grid) return;
       grid.innerHTML = '';
 
-      // Agrupar fotos por fecha
       const grouped = {};
       maryData.fotos.forEach(f => {
         if(!grouped[f.date]) grouped[f.date] = {};
@@ -1347,7 +1348,7 @@
       const dates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
 
       if(dates.length === 0) {
-        grid.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No hay fotos de progreso.</p>`;
+        grid.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No hay fotos de progreso.</p>`;
         return;
       }
 
@@ -1358,26 +1359,26 @@
           const photo = poses[poseName];
           if (photo) {
             posesHtml += `
-              <div class="space-y-1">
-                <span class="text-[10px] font-bold text-stone-500 block text-center">${poseName}</span>
-                <div class="relative rounded-2xl overflow-hidden border border-[#c8e3dc] bg-white h-64 group shadow-sm">
+              <div class="space-y-1.5">
+                <span class="text-xs font-black text-stone-700 block text-center uppercase tracking-wider">${poseName}</span>
+                <div class="relative rounded-2xl overflow-hidden border border-[#c8e3dc] bg-white h-72 sm:h-96 group shadow-md">
                   <img src="${photo.url}" alt="${poseName}" class="w-full h-full object-cover">
-                  <button onclick="deleteBiometriaItem('fotos', ${photo.id})" class="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">✕</button>
+                  <button onclick="deleteBiometriaItem('fotos', ${photo.id})" class="absolute top-3 right-3 bg-red-500 text-white w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer shadow-lg">✕</button>
                 </div>
               </div>`;
           } else {
             posesHtml += `
-              <div class="space-y-1">
-                <span class="text-[10px] font-bold text-stone-400 block text-center">${poseName} (Sin foto)</span>
-                <div class="rounded-2xl border border-dashed border-[#c8e3dc] bg-stone-50 h-64 flex items-center justify-center text-stone-300 text-xs">·</div>
+              <div class="space-y-1.5">
+                <span class="text-xs font-bold text-stone-400 block text-center uppercase tracking-wider">${poseName} (Sin foto)</span>
+                <div class="rounded-2xl border border-dashed border-[#c8e3dc] bg-stone-50/50 h-72 sm:h-96 flex items-center justify-center text-stone-300 text-sm font-bold">·</div>
               </div>`;
           }
         });
 
         grid.innerHTML += `
-          <div class="glass-card p-4 rounded-3xl space-y-3">
-            <strong class="text-xs font-black text-stone-800 block pb-1 border-b border-[#c8e3dc]">📅 Fecha: ${date}</strong>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="glass-card p-5 rounded-3xl space-y-4">
+            <strong class="text-sm font-black text-stone-800 block pb-2 border-b border-[#c8e3dc]">📅 Fecha de Registro: ${date}</strong>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               ${posesHtml}
             </div>
           </div>`;
