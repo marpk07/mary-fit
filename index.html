@@ -235,7 +235,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">⚖️ Control de Peso, Medidas & Fotos</h3>
-            <p class="text-xs text-stone-500">Seguimiento biométrico, objetivos, promedios y galería visual ampliada</p>
+            <p class="text-xs text-stone-500">Seguimiento biométrico completo, objetivos, promedios y comparativa visual</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="peso-promedio-badge" class="px-3 py-1.5 rounded-xl bg-[#b492cd]/20 text-[#633a82] font-black text-xs border border-[#b492cd]/40">Promedio Semanal: -- kg</span>
@@ -313,19 +313,41 @@
           <button onclick="saveFotoLog()" class="w-full py-2 bg-[#5fa89b] text-white rounded-xl text-xs font-black cursor-pointer shadow-sm">+ Guardar Foto</button>
         </div>
 
-        <!-- Sección de Gráficas (Chart.js) -->
+        <!-- Sección de Gráficas (Chart.js) con Filtro de Medida -->
         <div class="glass-card p-5 rounded-2xl space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#c8e3dc]">
             <h4 class="font-black text-stone-800 text-xs uppercase tracking-wider">📈 Gráficas de Evolución en el Tiempo</h4>
-            <div class="flex items-center gap-2 text-xs">
-              <span class="font-bold text-stone-600">Rango:</span>
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+              <span class="font-bold text-stone-600">Desde:</span>
               <input type="date" id="chart-from" onchange="renderBiometriaCharts()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 font-bold">
+              <span class="font-bold text-stone-600">Hasta:</span>
               <input type="date" id="chart-to" onchange="renderBiometriaCharts()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 font-bold">
             </div>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc]"><canvas id="weightChart" height="200"></canvas></div>
-            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc]"><canvas id="measurementsChart" height="200"></canvas></div>
+            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc] space-y-2">
+              <span class="font-bold text-xs text-stone-700 block">Evolución de Peso (kg)</span>
+              <canvas id="weightChart" height="200"></canvas>
+            </div>
+            <div class="bg-white/80 p-4 rounded-2xl border border-[#c8e3dc] space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-xs text-stone-700">Evolución de Medidas</span>
+                <select id="measurement-filter" onchange="renderBiometriaCharts()" class="bg-white border border-[#c8e3dc] rounded-xl px-2 py-1 text-xs font-bold">
+                  <option value="cintura">Cintura</option>
+                  <option value="cadera">Cadera</option>
+                  <option value="cuello">Cuello</option>
+                  <option value="pecho">Pecho</option>
+                  <option value="gluteo">Glúteo</option>
+                  <option value="cuad_der">Cuádriceps Der.</option>
+                  <option value="cuad_izq">Cuádriceps Izq.</option>
+                  <option value="pant_der">Pantorrilla Der.</option>
+                  <option value="pant_izq">Pantorrilla Izq.</option>
+                  <option value="brazo_der">Brazo Der.</option>
+                  <option value="brazo_izq">Brazo Izq.</option>
+                </select>
+              </div>
+              <canvas id="measurementsChart" height="200"></canvas>
+            </div>
           </div>
         </div>
 
@@ -344,19 +366,19 @@
           <div id="peso-streak-container" class="grid grid-cols-7 sm:grid-cols-10 md:grid-cols-14 gap-2 pt-2"></div>
         </div>
 
-        <!-- Listados de Historiales & Galería Visual Ampliada -->
+        <!-- Listados de Historiales & Galería Visual Ampliada (Lado a Lado por Fecha) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-80 overflow-y-auto">
+          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-96 overflow-y-auto">
             <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📋 Historial de Peso</h5>
             <div id="peso-history-list" class="space-y-2 text-xs"></div>
           </div>
-          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-80 overflow-y-auto">
+          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-96 overflow-y-auto">
             <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📋 Historial de Medidas</h5>
             <div id="med-history-list" class="space-y-2 text-xs"></div>
           </div>
-          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-80 overflow-y-auto">
-            <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📸 Galería Visual Ampliada</h5>
-            <div id="foto-gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1"></div>
+          <div class="glass-card p-4 rounded-2xl space-y-2 max-h-96 overflow-y-auto lg:col-span-1">
+            <h5 class="font-black text-stone-800 text-xs pb-1 border-b border-[#c8e3dc]">📸 Galería Visual (Lado a Lado)</h5>
+            <div id="foto-gallery-grid" class="space-y-4 pt-1"></div>
           </div>
         </div>
 
@@ -677,14 +699,17 @@
       const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const startStr = thirtyDaysAgo.toISOString().slice(0, 10);
       
-      ['res-from', 'al-from', 'ca-from', 'en-from', 'sa-from', 'chart-from', 'streak-from'].forEach(id => {
+      ['res-from', 'al-from', 'ca-from', 'en-from', 'sa-from', 'chart-from'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = startStr;
       });
-      ['res-to', 'al-to', 'ca-to', 'en-to', 'sa-to', 'chart-to', 'streak-to'].forEach(id => {
+      ['res-to', 'al-to', 'ca-to', 'en-to', 'sa-to', 'chart-to'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = today;
       });
+
+      const sFrom = document.getElementById('streak-from'); if(sFrom) sFrom.value = startStr;
+      const sTo = document.getElementById('streak-to'); if(sTo) sTo.value = today;
 
       const pDate = document.getElementById('peso-date'); if(pDate) pDate.value = today;
       const mDate = document.getElementById('med-date'); if(mDate) mDate.value = today;
@@ -1312,20 +1337,49 @@
       if(!grid) return;
       grid.innerHTML = '';
 
-      const sorted = [...maryData.fotos].sort((a,b)=>b.date.localeCompare(a.date));
-      if(sorted.length === 0) {
-        grid.innerHTML = `<p class="text-xs text-stone-400 col-span-2 text-center py-2">No hay fotos de progreso.</p>`;
+      // Agrupar fotos por fecha
+      const grouped = {};
+      maryData.fotos.forEach(f => {
+        if(!grouped[f.date]) grouped[f.date] = {};
+        grouped[f.date][f.pose] = f;
+      });
+
+      const dates = Object.keys(grouped).sort((a,b)=>b.localeCompare(a));
+
+      if(dates.length === 0) {
+        grid.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No hay fotos de progreso.</p>`;
         return;
       }
 
-      sorted.forEach(f => {
+      dates.forEach(date => {
+        const poses = grouped[date];
+        let posesHtml = '';
+        ['Frente', 'Lado', 'Espalda'].forEach(poseName => {
+          const photo = poses[poseName];
+          if (photo) {
+            posesHtml += `
+              <div class="space-y-1">
+                <span class="text-[10px] font-bold text-stone-500 block text-center">${poseName}</span>
+                <div class="relative rounded-2xl overflow-hidden border border-[#c8e3dc] bg-white h-64 group shadow-sm">
+                  <img src="${photo.url}" alt="${poseName}" class="w-full h-full object-cover">
+                  <button onclick="deleteBiometriaItem('fotos', ${photo.id})" class="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">✕</button>
+                </div>
+              </div>`;
+          } else {
+            posesHtml += `
+              <div class="space-y-1">
+                <span class="text-[10px] font-bold text-stone-400 block text-center">${poseName} (Sin foto)</span>
+                <div class="rounded-2xl border border-dashed border-[#c8e3dc] bg-stone-50 h-64 flex items-center justify-center text-stone-300 text-xs">·</div>
+              </div>`;
+          }
+        });
+
         grid.innerHTML += `
-          <div class="relative rounded-2xl overflow-hidden border border-[#c8e3dc] bg-white h-56 group shadow-sm">
-            <img src="${f.url}" alt="${f.pose}" class="w-full h-full object-cover">
-            <div class="absolute inset-x-0 bottom-0 bg-stone-900/75 text-white text-[10px] font-bold p-1.5 text-center">
-              ${f.date} · Pose: ${f.pose}
+          <div class="glass-card p-4 rounded-3xl space-y-3">
+            <strong class="text-xs font-black text-stone-800 block pb-1 border-b border-[#c8e3dc]">📅 Fecha: ${date}</strong>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              ${posesHtml}
             </div>
-            <button onclick="deleteBiometriaItem('fotos', ${f.id})" class="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">✕</button>
           </div>`;
       });
     }
@@ -1408,6 +1462,14 @@
         });
       }
 
+      const selectedMetric = document.getElementById('measurement-filter') ? document.getElementById('measurement-filter').value : 'cintura';
+      const metricNames = {
+        cintura: 'Cintura (cm)', cadera: 'Cadera (cm)', cuello: 'Cuello (cm)',
+        pecho: 'Pecho (cm)', gluteo: 'Glúteo (cm)', cuad_der: 'Cuádriceps Der. (cm)',
+        cuad_izq: 'Cuádriceps Izq. (cm)', pant_der: 'Pantorrilla Der. (cm)',
+        pant_izq: 'Pantorrilla Izq. (cm)', brazo_der: 'Brazo Der. (cm)', brazo_izq: 'Brazo Izq. (cm)'
+      };
+
       const medFiltered = maryData.medidas
         .filter(m => (!from || m.date >= from) && (!to || m.date <= to))
         .sort((a,b)=>a.date.localeCompare(b.date));
@@ -1419,28 +1481,19 @@
           type: 'line',
           data: {
             labels: medFiltered.map(m => m.date),
-            datasets: [
-              {
-                label: 'Cintura (cm)',
-                data: medFiltered.map(m => m.cintura),
-                borderColor: '#b492cd',
-                backgroundColor: 'transparent',
-                borderWidth: 2,
-                tension: 0.2
-              },
-              {
-                label: 'Cadera (cm)',
-                data: medFiltered.map(m => m.cadera),
-                borderColor: '#5fa89b',
-                backgroundColor: 'transparent',
-                borderWidth: 2,
-                tension: 0.2
-              }
-            ]
+            datasets: [{
+              label: metricNames[selectedMetric] || 'Medida',
+              data: medFiltered.map(m => m[selectedMetric] || 0),
+              borderColor: '#b492cd',
+              backgroundColor: 'rgba(180, 146, 205, 0.1)',
+              borderWidth: 3,
+              tension: 0.2,
+              fill: true
+            }]
           },
           options: {
             responsive: true,
-            plugins: { legend: { labels: { font: { size: 10 } } } },
+            plugins: { legend: { display: false } },
             scales: {
               y: { ticks: { font: { size: 10 } } },
               x: { ticks: { font: { size: 10 } } }
