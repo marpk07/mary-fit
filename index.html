@@ -6,7 +6,6 @@
   <title>MARY · Fitness & Performance Suite</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -67,7 +66,6 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased">
 
-  <!-- HEADER -->
   <header class="glass-card-solid sticky top-0 z-40 border-b border-[#c8e3dc]">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center space-x-3">
@@ -93,7 +91,6 @@
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
   <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
 
     <div class="glass-card rounded-3xl p-4 flex flex-wrap items-center justify-between gap-3">
@@ -101,7 +98,6 @@
       <button onclick="openModalMetas()" class="px-4 py-2 bg-[#b492cd] text-white font-extrabold text-xs rounded-xl shadow-md cursor-pointer">⚙️ Configurar Metas Base</button>
     </div>
 
-    <!-- PESTAÑA 1: RESUMEN GENERAL -->
     <section id="pane-resumen" class="tab-pane space-y-6">
       <div class="glass-card-solid rounded-3xl p-6 space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#c8e3dc]">
@@ -134,7 +130,6 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 2: ALIMENTACIÓN -->
     <section id="pane-alimentacion" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
@@ -153,7 +148,6 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 3: CARDIO -->
     <section id="pane-cardio" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
@@ -172,7 +166,6 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 4: ENTRENAMIENTO -->
     <section id="pane-entrenamiento" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
@@ -190,7 +183,6 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 5: CALENDARIO -->
     <section id="pane-calendario" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
@@ -208,7 +200,6 @@
       </div>
     </section>
 
-    <!-- PESTAÑA 6: SALUD Y BIENESTAR -->
     <section id="pane-salud" class="tab-pane space-y-6 hidden">
       <div class="glass-card-solid rounded-3xl p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
@@ -229,7 +220,6 @@
 
   </main>
 
-  <!-- MODALES -->
   <div id="modal-meta-custom" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay hidden">
     <div class="glass-card-solid rounded-3xl max-w-md w-full p-6 space-y-4 border border-[#c8e3dc]">
       <div class="flex items-center justify-between pb-2 border-b border-[#c8e3dc]">
@@ -1100,15 +1090,14 @@
         calView.innerHTML += `<div class="text-center font-black text-[10px] text-stone-400">${d}</div>`;
       });
 
-      // Primer día del mes y total de días
+      // Primer día del mes y total de días (ajustado para que Lunes sea índice 0)
       const firstDayObj = new Date(calendarYear, calendarMonth, 1);
-      let startDayOfWeek = firstDayObj.getDay(); // 0 es Domingo, 1 es Lunes...
-      // Ajustar para que Lunes sea 0 y Domingo sea 6
+      let startDayOfWeek = firstDayObj.getDay(); 
       startDayOfWeek = (startDayOfWeek + 6) % 7;
 
       const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
 
-      // Rellenar espacios vacíos antes del día 1 del mes
+      // Rellenar espacios vacíos antes del día 1
       for (let i = 0; i < startDayOfWeek; i++) {
         calView.innerHTML += `<div></div>`;
       }
@@ -1120,8 +1109,8 @@
         const hasEntreno = maryData.entrenamiento.some(x => x.date === dStr);
         const hasCardio = maryData.cardio.some(x => x.date === dStr);
 
-        // Validar metas cumplidas de Calorías y Proteína para los iconos de Ensalada (🥗) y Pez (🐟)
-        const metas = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 80 };
+        // Verificación de metas base para Ensalada (🥗) y Pez (🐟)
+        const metas = maryData.metas || { calMax: 1700, protMin: 80 };
         const dayAl = maryData.alimentacion.filter(x => x.date === dStr);
         const sumCal = dayAl.reduce((a, b) => a + b.cal, 0);
         const sumProt = dayAl.reduce((a, b) => a + b.prot, 0);
@@ -1399,7 +1388,7 @@
         });
 
         fEntreno.filter(x => x.date === d).forEach(e => {
-          report += `💪 Entreno (${e.rutina}): ${e.tiempo}m | ${e.cal}kcal | RPE: ${e.esfuerzo}/10\n`;
+          report += `🏋🏻‍♀️ Entreno (${e.rutina}): ${e.tiempo}m | ${e.cal}kcal | RPE: ${e.esfuerzo}/10\n`;
           (e.ejercicios || []).forEach(ej => {
             let sTxt = ej.series.map((s,i) => `S${i+1}: ${s.peso}${s.unidad}x${s.reps}${s.pr?' 👑':''}`).join(', ');
             report += `    ▪️ ${ej.nombre}: ${sTxt}\n`;
