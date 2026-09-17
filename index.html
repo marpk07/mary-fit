@@ -196,12 +196,12 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#c8e3dc]">
           <div>
             <h3 class="text-base font-black text-stone-800">🗓️ Calendario Histórico de Actividad</h3>
-            <p class="text-xs text-stone-500">🏋️‍♀️ Fuerza | 🏃‍♀️ Cardio</p>
+            <p class="text-xs text-stone-500">🥗 Calorías | 🐟 Proteína | 🏋️‍♀️ Fuerza | 🏃‍♀️ Cardio</p>
           </div>
           <div class="flex items-center space-x-2">
-            <button onclick="changeCalendarMonth(-1)" class="px-3 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold text-xs">◀ Mes Anterior</button>
+            <button onclick="changeCalendarMonth(-1)" class="px-3 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold text-xs cursor-pointer">◀ Mes Anterior</button>
             <span id="calendar-month-label" class="text-xs font-black uppercase text-stone-800 px-2"></span>
-            <button onclick="changeCalendarMonth(1)" class="px-3 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold text-xs">Mes Siguiente ▶</button>
+            <button onclick="changeCalendarMonth(1)" class="px-3 py-1 bg-white border border-[#c8e3dc] rounded-xl font-bold text-xs cursor-pointer">Mes Siguiente ▶</button>
           </div>
         </div>
         <div id="calendar-view" class="grid grid-cols-7 gap-2 py-4"></div>
@@ -1095,26 +1095,46 @@
       const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
       label.innerText = `${monthNames[calendarMonth]} ${calendarYear}`;
 
-      const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-
+      // Cabeceras de Lunes a Domingo
       ['L', 'M', 'X', 'J', 'V', 'S', 'D'].forEach(d => {
         calView.innerHTML += `<div class="text-center font-black text-[10px] text-stone-400">${d}</div>`;
       });
 
+      // Primer día del mes y total de días
+      const firstDayObj = new Date(calendarYear, calendarMonth, 1);
+      let startDayOfWeek = firstDayObj.getDay(); // 0 es Domingo, 1 es Lunes...
+      // Ajustar para que Lunes sea 0 y Domingo sea 6
+      startDayOfWeek = (startDayOfWeek + 6) % 7;
+
+      const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+
+      // Rellenar espacios vacíos antes del día 1 del mes
+      for (let i = 0; i < startDayOfWeek; i++) {
+        calView.innerHTML += `<div></div>`;
+      }
+
+      // Renderizar días del mes
       for (let i = 1; i <= daysInMonth; i++) {
         const dStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        
         const hasEntreno = maryData.entrenamiento.some(x => x.date === dStr);
         const hasCardio = maryData.cardio.some(x => x.date === dStr);
 
-        let bgClass = 'bg-white/60 text-stone-600';
-        if (hasEntreno && hasCardio) bgClass = 'bg-gradient-to-r from-emerald-500/30 to-[#b492cd]/30 border border-stone-400 font-black';
-        else if (hasEntreno) bgClass = 'bg-emerald-500/30 border border-emerald-500 text-emerald-900 font-black';
-        else if (hasCardio) bgClass = 'bg-[#b492cd]/30 border border-[#b492cd] text-[#633a82] font-black';
+        // Validar metas cumplidas de Calorías y Proteína para los iconos de Ensalada (🥗) y Pez (🐟)
+        const metas = maryData.metas || { calMin: 1600, calMax: 1700, protMin: 80 };
+        const dayAl = maryData.alimentacion.filter(x => x.date === dStr);
+        const sumCal = dayAl.reduce((a, b) => a + b.cal, 0);
+        const sumProt = dayAl.reduce((a, b) => a + b.prot, 0);
+
+        const hasMetasCal = dayAl.length > 0 && sumCal <= metas.calMax;
+        const hasMetasProt = dayAl.length > 0 && sumProt >= metas.protMin;
 
         calView.innerHTML += `
-          <div class="h-12 rounded-xl flex flex-col items-center justify-center text-xs cursor-pointer transition hover:scale-105 ${bgClass}" title="${dStr}">
+          <div class="h-14 rounded-xl flex flex-col items-center justify-center text-xs cursor-pointer transition hover:scale-105 bg-white/70 border border-[#c8e3dc] text-stone-700 font-bold" title="${dStr}">
             <span>${i}</span>
-            <div class="flex gap-1 mt-0.5 text-[10px]">
+            <div class="flex gap-0.5 mt-0.5 text-[10px] flex-wrap justify-center">
+              ${hasMetasCal ? '🥗' : ''}
+              ${hasMetasProt ? '🐟' : ''}
               ${hasEntreno ? '🏋️‍♀️' : ''}
               ${hasCardio ? '🏃‍♀️' : ''}
             </div>
@@ -1136,9 +1156,7 @@
       const todayStr = today.toISOString().slice(0, 10);
       const dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
-      // Semana calendario real (Lunes a Domingo) que contiene hoy — así los días futuros
-      // se muestran vacíos en vez de contarse como si ya hubieran pasado.
-      const todayDow = (today.getDay() + 6) % 7; // 0=Lunes ... 6=Domingo
+      const todayDow = (today.getDay() + 6) % 7; 
       const monday = new Date(today);
       monday.setDate(today.getDate() - todayDow);
       const weekDays = [];
@@ -1151,7 +1169,6 @@
         weekDays.push({ dateStr: `${yyyy}-${mm}-${dd}`, dayName: dayNames[i] });
       }
 
-      // ¿Ocurrió este tipo de meta (cardio/entreno) en una fecha puntual?
       function metricOccurredOnDate(metricType, dateStr) {
         if (metricType === 'entreno') return maryData.entrenamiento.some(x => x.date === dateStr);
         if (metricType === 'cardio_sesiones') return maryData.cardio.some(x => x.date === dateStr);
@@ -1160,9 +1177,6 @@
         return false;
       }
 
-      // Estado diario de metas de tipo cal/prot/agua — SOLO evalúa si hay datos de esa
-      // categoría específica ese día (antes contaba con datos de cardio/salud aunque no
-      // hubiera comida registrada, mostrando check falsos).
       function getDailyMetricStatus(metricType, dateStr, targetValue) {
         if (metricType === 'prot' || metricType === 'cal') {
           const dayAl = maryData.alimentacion.filter(x => x.date === dateStr);
@@ -1347,7 +1361,7 @@
           html += `<p>🏃‍♀️ <strong>Cardio [${c.lugar}]:</strong> ${c.min} min | ${c.km} km | ${c.cal} kcal | HR: ${c.hr} lpm | Ritmo: ${c.ritmo}</p>`;
         });
         entrenos.forEach(e => {
-          html += `<p>💪 <strong>Entreno (${e.rutina}):</strong> ${e.tiempo} min | ${e.cal} kcal | HR: ${e.hr} lpm | RPE: ${e.esfuerzo}/10 | Notas: ${e.notas || 'S/N'}</p>`;
+          html += `<p>🏋🏻‍♀️ <strong>Entreno (${e.rutina}):</strong> ${e.tiempo} min | ${e.cal} kcal | HR: ${e.hr} lpm | RPE: ${e.esfuerzo}/10 | Notas: ${e.notas || 'S/N'}</p>`;
         });
         if (salud) html += `<p>🍎 <strong>Salud:</strong> Agua: ${salud.agua}L | Sueño: ${salud.sueno}h (${salud.calidadSueno}) | Ánimo: ${salud.animo} | Med: ${salud.med}m | Dulce: ${salud.dulce?'Sí':'No'} | Periodo: ${salud.periodo?'Sí':'No'}</p>`;
 
